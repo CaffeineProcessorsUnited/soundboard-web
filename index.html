@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <title>Soundboard Webinterface</title>
+    <link rel="stylesheet" href="style/style.css">
+    <script src="http://localhost:8080/socket.io/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script>
+      var socket;
+      $(document).ready(function onDocumentReady(){
+        socket = io.connect("http://localhost:8080");
+        socket.on('isPlaying', function onIsPlaying(data){
+          if(data["playing"]){
+            $("#play").html("Pause");
+            $('#play').off('click');
+            $("#play").on('click',emitPause);
+          }
+          else {
+            $('#play').html("Play");
+            $('#play').off('click');
+            $("#play").on('click',emitPlay);
+          }
+        });
+        function emitPause(){
+          socket.emit("pause");
+          setTimeout(socket.emit("isPlaying"),100);
+        }
+        function emitPlay(){
+          socket.emit("play");
+          setTimeout(socket.emit("isPlaying"),100);
+        }
+        socket.emit("isPlaying");
+      });
+    </script>
+  </head>
+  <body>
+    <header>
+      <h1>Soundboard Webinterface</h1>
+    </header>
+    <footer class="playback_control">
+      <a id="play">Play</a>
+    </footer>
+  </body>
+</html>
