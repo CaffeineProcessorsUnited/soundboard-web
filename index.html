@@ -20,14 +20,25 @@
             $("#play").on('click',emitPlay);
           }
         });
+        socket.on('get_current_queue',function onGetCurrentQueue(data){
+
+        });
         function emitPause(){
           socket.emit("pause");
-          setTimeout(socket.emit("isPlaying"),100);
+          socket.emit("isPlaying");
         }
         function emitPlay(){
           socket.emit("play");
-          setTimeout(socket.emit("isPlaying"),100);
+          socket.emit("isPlaying");
         }
+        function emitNext(){
+          socket.emit("next");
+        }
+        function emitPrev() {
+          socket.emit("prev");
+        }
+        $('#prev').on('click',emitPrev);
+        $('#next').on('click',emitNext);
         socket.emit("isPlaying");
       });
     </script>
@@ -37,7 +48,9 @@
       <h1>Soundboard Webinterface</h1>
     </header>
     <footer class="playback_control">
-      <a id="play">Play</a>
+      <a class="playback_button" id="prev">Prev</a>
+      <a class="playback_button" id="play">Play</a>
+      <a class="playback_button" id="next">Next</a>
     </footer>
   </body>
 </html>
