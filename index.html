@@ -19,8 +19,8 @@
             var elem = $('<li></li>');
             elem.addClass('item');
             elem[track["id"] == data["currentTrack"]["id"] ? 'addClass' : 'removeClass']('current');
-            elem.data('index', index);
-            elem.data('id', index);
+            elem.attr('data-index', index);
+            elem.attr('data-id', index);
             var title = $('<div></div>');
             title.addClass('title');
             title.html(track["path"]);
@@ -31,10 +31,10 @@
           });
           $('.queue').find('a').on('click', function() {
             var e = $(this);
-            var a = e.data('action');
+            var a = e.attr('data-action');
             var i = e.closest('.item');
-            var id = i.data('id');
-            var index = i.data('index');
+            var id = i.attr('data-id');
+            var index = i.attr('data-index');
             alert(a + '\n' + index + '\n' + id + '\n');
           });
           $('#tracktitle').text();
