@@ -20,7 +20,7 @@
             elem.addClass('item');
             elem[track["id"] == data["currentTrack"]["id"] ? 'addClass' : 'removeClass']('current');
             elem.attr('data-index', index);
-            elem.attr('data-id', index);
+            elem.attr('data-id', track["id"]);
             var title = $('<div></div>');
             title.addClass('title');
             title.html(track["path"]);
