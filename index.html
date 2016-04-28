@@ -15,19 +15,44 @@
           console.log(data);
           var tracks = data["queue"];
           $('.queue').empty();
-          tracks.forEach(function(track){
-            var elem = $('<li></li>').html(track["path"]);
-            if(track["id"]==data["currentTrack"]["id"]){
-              //TODO Malte do the css magic
-            }
+          tracks.forEach(function(track, index){
+            var elem = $('<li></li>');
+            elem.addClass('item');
+            elem[track["id"] == data["currentTrack"]["id"] ? 'addClass' : 'removeClass']('current');
+            elem.data('index', index);
+            elem.data('id', index);
+            var title = $('<div></div>');
+            title.addClass('title');
+            title.html(track["path"]);
+            elem.append(title);
+            elem.append(generate_controls());
             $('.queue').append(elem);
+          });
+          $('.queue').find('a').on('click', function() {
+            var e = $(this);
+            var a = e.data('action');
+            var i = e.closest('.item');
+            var id = i.data('id');
+            var index = i.data('index');
+            alert(a + '\n' + index + '\n' + id + '\n');
           });
           $('#tracktitle').text();
         });
         socket.on('poll', function onPoll() {
           socket.emit('isPlaying');
           socket.emit('get_queue');
-        })
+        });
+        function generate_controls() {
+          var controls = $('<div></div>');
+          controls.addClass('pbc');
+          controls.append(generate_action('up', 'chevron-up'));
+          controls.append(generate_action('down', 'chevron-down'));
+          controls.append($('<div class="clearfix"></div>'));
+          return controls;
+        }
+        function generate_action(name, icon) {
+          var action = $('<a data-action="' + name + '"><i class="fa fa-' + icon + '"></i></a>');
+        }
         function emitPlayPause() {
           if ($('#play').hasClass('playing')) {
             emitPause();
@@ -73,7 +98,7 @@
     </div>
     <div class="content">
       <ul class="queue">
-        <li class="item" data-index="0" data-id="02748093840729"><div class="title">Test1</div><div class="pbc"><a data-action="up"><i class="fa fa-chevron-up"></i></a><a data-action="down"><i class="fa fa-chevron-down"></i></a></div><div class="clearfix"></div></li>
+
       </ul>
       <div class="append">
         <div class="pbc">
