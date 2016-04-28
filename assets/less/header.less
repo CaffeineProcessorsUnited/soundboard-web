@@ -1,0 +1,79 @@
+// "main":"main.less"
+@import (once) "variables.less";
+
+.header() {
+  .box-sizing(border-box);
+  position: fixed;
+  top: 0px;
+  width: 100%;
+  height: @header-height + @header-padding-top;
+  line-height: @header-height;
+  vertical-align: middle;
+  background-color: @background-color-dark;
+  border-bottom: @header-border-width solid @brand-primary;
+  .content {
+    .page-width();
+    padding-top: @header-padding-top;
+    height: @header-height;
+    .brand {
+      .box-sizing(border-box);
+      float: left;
+      margin-right: 20px;
+      height: 100%;
+      line-height: @header-height;
+      border-top: @header-border-width solid transparent;
+      border-bottom: @header-border-width solid transparent;
+      &:hover {
+        //border-bottom: @header-border-width solid @brand-accent;
+        .keyframes(logobeat;{
+          0% {.scale(1.0);}
+          50% {.scale(1.2);}
+          100% {.scale(1.0);}
+        });
+  	    .animation(logobeat 1.5s ease-in-out infinite alternate);
+      }
+      a, img {
+        height: 100%;
+      }
+    }
+    ul.nav {
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      font-size: 0;
+      list-style-type: none;
+      height: 60px;
+      li {
+        .box-sizing(border-box);
+        font-size: @font-size;
+        display: inline-block;
+        vertical-align: middle;
+        height: 100%;
+        &.active,
+        &:hover {
+          background-color: @background-color;
+        }
+        &.active {
+          border-bottom: @header-border-width solid @color-light;
+          a, a:link, a:visited, a:active, a:hover {
+            color: @color-light;
+          }
+        }
+        &:hover {
+          border-bottom: @header-border-width solid @brand-accent;
+          a, a:link, a:visited, a:active, a:hover {
+            color: @brand-accent;
+          }
+        }
+        a {
+          font-size: @header-li-font-size;
+          font-weight: @header-li-font-weight;
+          padding-left: 20px;
+          padding-right: 20px;
+          display: inline-block;
+          height: 100%;
+        }
+      }
+    }
+  }
+}

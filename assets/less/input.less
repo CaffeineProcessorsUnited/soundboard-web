@@ -1,0 +1,24 @@
+// "main":"main.less"
+@import (once) "variables.less";
+
+.input() {
+  input, select {
+    .box-sizing(border-box);
+    display: inline-block;
+    border: 1px solid @brand-primary;
+    border-radius: 4px;
+    background-color: #000;
+    color: #FFF;
+    font-size: 18px;
+    vertical-align: middle;
+    margin: 5px;
+    padding: 2px;
+    option {
+
+    }
+    &:focus {
+      outline: none;
+      border: 1px solid @brand-accent;
+    }
+  }
+}

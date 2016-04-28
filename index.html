@@ -1,7 +1,7 @@
 <html>
   <head>
     <title>Soundboard Webinterface</title>
-    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="assets/css/style.css">
     <script src="http://localhost:8080/socket.io/socket.io.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script>
@@ -43,23 +43,36 @@
       });
     </script>
   </head>
-  <body>
-    <header>
+  <body id="page">
+    <div class="header">
       <h1>Soundboard Webinterface</h1>
-    </header>
-    <div id="add_track_container">
-      <select name="Select Service" id="serviceSelector">
-        <option>Youtube</option>
-        <option>Filesystem</option>
-      </select>
-      <input type="text" id="path_input"/>
-      <a class="playback_button" id="play_track">Play</a>
-      <a class="playback_button" id="add_to_queue">Add to Queue</a>
     </div>
-    <footer class="playback_control">
-      <a class="playback_button" id="prev">Prev</a>
-      <a class="playback_button" id="play">Play</a>
-      <a class="playback_button" id="next">Next</a>
-    </footer>
+    <div class="content">
+      <ul class="queue">
+        <li>Test1</li>
+      </ul>
+      <div class="append">
+        <div class="pbc">
+          <select name="Select Service" id="serviceSelector">
+            <option value="yt">Youtube</option>
+            <option value="fs">Filesystem</option>
+          </select>
+        </div>
+        <div class="pbc"><input type="text" id="path_input"/></div>
+        <div class="pbc"><a class="pbc" id="play_track"><i class="fa fa-play"></i></a></div>
+        <div class="pbc"><a id="add_to_queue"><i class="fa fa-plus"></i></a></div>
+      </div>
+    </div>
+    <div class="footer">
+      <div class="grid">
+        <div class="col col-3"></div>
+        <div class="col col-3">
+          <a class="pbc" id="prev"><i class="fa fa-backward"></i></a>
+          <a class="pbc" id="play"><i class="fa fa-play"></i></a>
+          <a class="pbc" id="next"><i class="fa fa-forward"></i></a>
+        </div>
+        <div class="col col-3"></div>
+      </div>
+    </div>
   </body>
 </html>
