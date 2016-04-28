@@ -6,36 +6,39 @@
     <script src="assets/js/jquery.min.js"></script>
     <script>
       var socket;
-      $(document).ready(function onDocumentReady(){
-        socket = io.connect("http://localhost:8080");
-        socket.on('isPlaying', function onIsPlaying(data){
-          if(data["playing"]){
-            $('#play').toggleClass("paused");
-            $('#play').off('click');
-            $("#play").on('click',emitPause);
-          }
-          else {
-            $('#play').toggleClass("paused");
-            $('#play').off('click');
-            $("#play").on('click',emitPlay);
-          }
+      $(document).ready(function onDocumentReady() {
+        socket = io.connect('http://localhost:8080');
+        socket.on('isPlaying', function onIsPlaying(data) {
+          $('#play')[data["playing"] ? 'addClass' : 'removeClass']('playing');
         });
         socket.on('get_queue',function onGetCurrentQueue(data){
           console.log(data);
+          $('#tracktitle').text();
         });
-        function emitPause(){
-          socket.emit("pause");
-          socket.emit("isPlaying");
+        socket.on('poll', function onPoll() {
+          socket.emit('isPlaying');
+          socket.emit('get_current_queue');
+        })
+        function emitPlayPause() {
+          if ($('#play').hasClass('playing')) {
+            emitPause();
+          } else {
+            emitPlay();
+          }
         }
-        function emitPlay(){
-          socket.emit("play");
-          socket.emit("isPlaying");
+        function emitPause() {
+          socket.emit('pause');
+          socket.emit('isPlaying');
+        }
+        function emitPlay() {
+          socket.emit('play');
+          socket.emit('isPlaying');
         }
         function emitNext(){
-          socket.emit("next");
+          socket.emit('next');
         }
         function emitPrev() {
-          socket.emit("prev");
+          socket.emit('prev');
         }
         function onPlayTitle(){
           console.log("send track");
@@ -45,9 +48,11 @@
         function onAddToQueue() {
           socket.emit("add_track",{"service":$('#serviceSelector').val(),"path":$('#path_input').val(),'next':false});
         }
-        $('#prev').on('click',emitPrev);
-        $('#next').on('click',emitNext);
-        $('#play_track').on('click',onPlayTitle);
+        $('#prev').on('click', emitPrev);
+        $('#next').on('click', emitNext);
+
+        $('#play').on('click', emitPlayPause);
+        $('#play_track').on('click', onPlayTitle);
         $('#add_to_queue').on('click', onAddToQueue);
         socket.emit("isPlaying");
       });
@@ -69,22 +74,22 @@
           </select>
         </div>
         <div class="pbc"><input type="text" id="path_input"/></div>
-        <div class="pbc"><a class="pbc" id="play_track"><i class="fa fa-play"></i></a></div>
-        <div class="pbc"><a id="add_to_queue"><i class="fa fa-plus"></i></a></div>
+        <div class="pbc"><a class="pbc" id="play_track" href="#"><i class="fa fa-play"></i><div> Play this track</div></a></div>
+        <div class="pbc"><a id="add_to_queue" href="#"><i class="fa fa-plus"></i><div> Add to Queue</div></a></div>
       </div>
     </div>
     <div class="footer">
       <div class="grid">
         <div class="row">
           <div class="col col-12">
-            Now playing: <span id="title"></span>
+            Now playing: <span id="tracktitle"></span>
           </div>
         </div>
         <div class="row">
           <div class="col col-12">
-            <div class="pbc"><a id="prev"><i class="fa fa-backward"></i></a></div>
-            <div class="pbc"><a id="play"><i class="fa fa-play"></i></a></div>
-            <div class="pbc"><a id="next"><i class="fa fa-forward"></i></a></div>
+            <div class="pbc"><a href="#" id="prev"><i class="fa fa-backward"></i></a></div>
+            <div class="pbc"><a href="#" id="play"><i class="fa fa-play"></i></a></div>
+            <div class="pbc"><a href="#" id="next"><i class="fa fa-forward"></i></a></div>
           </div>
         </div>
       </div>
