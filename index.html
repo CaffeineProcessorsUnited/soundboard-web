@@ -56,12 +56,16 @@
         function onAddToQueue() {
           socket.emit("add_track",{"service":$('#serviceSelector').val(),"path":$('#path_input').val(),'next':false});
         }
+        function onClearQueue() {
+          socket.emit("clear_queue");
+        }
         $('#prev').on('click', emitPrev);
         $('#next').on('click', emitNext);
 
         $('#play').on('click', emitPlayPause);
         $('#play_track').on('click', onPlayTitle);
         $('#add_to_queue').on('click', onAddToQueue);
+        $('#clear_queue').on('click', onClearQueue);
         socket.emit("isPlaying");
         socket.emit("get_queue");
       });
@@ -85,6 +89,7 @@
         <div class="pbc"><input type="text" id="path_input"/></div>
         <div class="pbc"><a class="pbc" id="play_track" href="#"><i class="fa fa-play"></i><div> Play this track</div></a></div>
         <div class="pbc"><a id="add_to_queue" href="#"><i class="fa fa-plus"></i><div> Add to Queue</div></a></div>
+        <div class="pbc"><a id="clear_queue" href="#"><i class="fa fa-eject"></i><div> Clear Queue</div></a></div>
       </div>
     </div>
     <div class="footer">
@@ -98,6 +103,7 @@
           <div class="col col-12">
             <div class="pbc"><a href="#" id="prev"><i class="fa fa-backward"></i></a></div>
             <div class="pbc"><a href="#" id="play"><i class="fa fa-play"></i></a></div>
+            <div class="pbc"><a href="#" id="stop"><i class="fa fa-stop"></i></a></div>
             <div class="pbc"><a href="#" id="next"><i class="fa fa-forward"></i></a></div>
           </div>
         </div>
