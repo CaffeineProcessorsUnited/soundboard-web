@@ -2,17 +2,42 @@
 @import (once) "variables.less";
 
 .playback() {
-  font-size: 28px;
-  line-height: 28px;
   display: inline-block;
+  height: 30px;
+  overflow: hidden;
   margin: 5px;
-  padding: 1px 0px;
-  width: 30px;
-  text-align: center;
-  &, &:link, &:visited {
+  a {
+    font-size: 30px;
+    line-height: 30px;
+    vertical-align: middle;
+    display: inline-block;
+    width: 30px;
+    text-align: center;
+    overflow: hidden;
+    &, &:link, &:visited {
 
+    }
+    &:active, &:hover {
+      color: @brand-accent;
+    }
   }
-  &:active, &:hover {
-    color: @brand-accent;
+  input, select {
+    .box-sizing(border-box);
+    display: inline-block;
+    border: 2px solid @brand-primary;
+    border-radius: 4px;
+    background-color: #000;
+    color: #FFF;
+    font-size: 18px;
+    vertical-align: middle;
+    padding: 2px;
+    height: 30px;
+    option {
+
+    }
+    &:focus {
+      outline: none;
+      border: 1px solid @brand-accent;
+    }
   }
 }
