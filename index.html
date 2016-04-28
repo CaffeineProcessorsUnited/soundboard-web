@@ -26,6 +26,7 @@
             title.html(track["path"]);
             elem.append(title);
             elem.append(generate_controls());
+            elem.append($('<div class="clearfix"></div>'));
             $('.queue').append(elem);
           });
           $('.queue').find('a').on('click', function() {
@@ -47,11 +48,10 @@
           controls.addClass('pbc');
           controls.append(generate_action('up', 'chevron-up'));
           controls.append(generate_action('down', 'chevron-down'));
-          controls.append($('<div class="clearfix"></div>'));
           return controls;
         }
         function generate_action(name, icon) {
-          var action = $('<a data-action="' + name + '"><i class="fa fa-' + icon + '"></i></a>');
+          return $('<a data-action="' + name + '"><i class="fa fa-' + icon + '"></i></a>');
         }
         function emitPlayPause() {
           if ($('#play').hasClass('playing')) {
