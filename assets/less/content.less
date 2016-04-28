@@ -14,9 +14,32 @@
     height: 80px;
   }
   .queue {
-
+    padding: 10px;
+    .item {
+      list-style-type: none;
+      width: 100%;
+      .title {
+        float: left;
+        line-height: 30px;
+      }
+      .pbc {
+        float: right;
+        width: 200px;
+        margin: 0px;
+        a {
+          &:first-child {
+            margin-left: 0px;
+          }
+          &:last-child {
+            margin-right: 0px;
+          }
+          margin-left: 3px;
+          margin-right: 3px;
+        }
+      }
+    }
   }
   .append {
-    
+
   }
 }

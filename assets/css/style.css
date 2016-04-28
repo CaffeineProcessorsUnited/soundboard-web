@@ -210,6 +210,32 @@ a:hover {
   content: "";
   height: 80px;
 }
+#page > .content .queue {
+  padding: 10px;
+}
+#page > .content .queue .item {
+  list-style-type: none;
+  width: 100%;
+}
+#page > .content .queue .item .title {
+  float: left;
+  line-height: 30px;
+}
+#page > .content .queue .item .pbc {
+  float: right;
+  width: 200px;
+  margin: 0px;
+}
+#page > .content .queue .item .pbc a {
+  margin-left: 3px;
+  margin-right: 3px;
+}
+#page > .content .queue .item .pbc a:first-child {
+  margin-left: 0px;
+}
+#page > .content .queue .item .pbc a:last-child {
+  margin-right: 0px;
+}
 #page > .footer {
   display: table;
   width: 100%;
@@ -290,7 +316,7 @@ a:hover {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   display: inline-block;
-  border: 2px solid #FF50A2;
+  border: 1px solid #FF50A2;
   border-radius: 4px;
   background-color: #000;
   color: #FFF;
@@ -379,6 +405,9 @@ a:hover {
     -o-transform: scale(1, 1);
     transform: scale(1, 1);
   }
+}
+#page .clearfix {
+  clear: both;
 }
 .grid.row,
 .grid .row {
