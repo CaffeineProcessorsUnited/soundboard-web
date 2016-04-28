@@ -10,18 +10,18 @@
         socket = io.connect("http://localhost:8080");
         socket.on('isPlaying', function onIsPlaying(data){
           if(data["playing"]){
-            $("#play").html("Pause");
+            $('#play').toggleClass("paused");
             $('#play').off('click');
             $("#play").on('click',emitPause);
           }
           else {
-            $('#play').html("Play");
+            $('#play').toggleClass("paused");
             $('#play').off('click');
             $("#play").on('click',emitPlay);
           }
         });
-        socket.on('get_current_queue',function onGetCurrentQueue(data){
-
+        socket.on('get_queue',function onGetCurrentQueue(data){
+          console.log(data);
         });
         function emitPause(){
           socket.emit("pause");
@@ -38,12 +38,17 @@
           socket.emit("prev");
         }
         function onPlayTitle(){
-          socket.emit("add_track",{"service":$('#serviceSelector').val(),"path":$('#path_input').val()});
+          console.log("send track");
+          socket.emit("add_track",{"service":$('#serviceSelector').val(),"path":$('#path_input').val(),'next':true});
           socket.emit("next");
+        }
+        function onAddToQueue() {
+          socket.emit("add_track",{"service":$('#serviceSelector').val(),"path":$('#path_input').val(),'next':false});
         }
         $('#prev').on('click',emitPrev);
         $('#next').on('click',emitNext);
-        $('#play_track').on('click',onPlayTitle());
+        $('#play_track').on('click',onPlayTitle);
+        $('#add_to_queue').on('click', onAddToQueue);
         socket.emit("isPlaying");
       });
     </script>
