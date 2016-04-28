@@ -1,0 +1,73 @@
+// "main":"main.less"
+@import (once) "variables.less";
+
+.page-width() {
+  margin: 0px auto;
+  padding: 0px 0px;
+  min-width: @page-min-width;
+  max-width: @page-max-width;
+  width: @page-width;
+}
+
+.animation(@arguments) {
+	-webkit-animation: @arguments;
+	-moz-animation: @arguments;
+	animation: @arguments;
+}
+
+.keyframes(@name; @arguments) {
+	@-moz-keyframes @name { @arguments(); }
+	@-webkit-keyframes @name { @arguments(); }
+	@keyframes @name { @arguments(); }
+}
+
+.scale(@both) {
+  .scale(@both, @both);
+}
+
+.scale(@x, @y) {
+  -webkit-transform: scale(@x, @y);
+  -moz-transform: scale(@x, @y);
+  -ms-transform: scale(@x, @y);
+  -o-transform: scale(@x, @y);
+  transform: scale(@x, @y);
+}
+
+.generate-grid(@n, @name: "") {
+  .grid-name(@name) when (@name = "") {
+    @grid-name: ~".grid";
+  }
+  .grid-name(@name) when not (@name = "") {
+    @grid-name: ~".grid-@{name}";
+  }
+  .grid-name(@name);
+  @{grid-name} {
+    &.row, .row {
+      position: relative;
+      font-size: 0; // Important to remove spaces between containers
+      text-align: center;
+      & > * {
+        margin: 0px;
+        padding: 0px;
+        font-size: @font-size;
+      }
+      .col {
+        display: inline-block;
+      }
+      .col(@n, @i: 1) when (@i <= @n) {
+        .col.col-@{i} {
+          width: (100% / @n * @i);
+          min-width: min(@page-min-width / 2, @page-max-width / @n * @i);
+        }
+        .col(@n, (@i + 1));
+      }
+      .col(@n);
+    }
+  }
+}
+
+.box-sizing(@arguments) {
+  box-sizing: @arguments;
+    -moz-box-sizing: @arguments;
+    -webkit-box-sizing: @arguments;
+}

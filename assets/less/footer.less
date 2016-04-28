@@ -1,0 +1,41 @@
+// "main":"main.less"
+@import (once) "variables.less";
+
+.footer() {
+  display: table;
+  width: 100%;
+  height: @footer-height;
+  background-color: @background-color-dark;
+  .box-sizing(border-box);
+  border-top: @footer-border-width solid @brand-primary;
+  overflow: hidden;
+  .content {
+    display: table;
+    vertical-align: middle;
+    .box-sizing(border-box);
+    .page-width();
+    max-height: 100%;
+    padding: 2px 0px;
+    color: @color-dark;
+    overflow: hidden;
+  }
+  .col {
+    margin-top: 3px;
+    margin-bottom: 3px;
+  }
+  .links {
+    list-style-type: none;
+    a {
+      &, &:link, &:visited {
+        color: @color-dark;
+      }
+      &:active, &:hover {
+        color: @brand-accent;
+      }
+    }
+    .love {
+      width: 100%;
+      text-align: center;
+    }
+  }
+}
