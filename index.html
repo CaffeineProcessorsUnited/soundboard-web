@@ -39,10 +39,17 @@
         function emitPrev() {
           socket.emit('prev');
         }
-        $('#prev').on('click',emitPrev);
-        $('#next').on('click',emitNext);
-        $('#play').on('click',emitPlayPause);
-        socket.emit('isPlaying');
+        function onPlayTitle(){
+          socket.emit("add_track",{"service":$('#serviceSelector').val(),"path":$('#path_input').val()});
+          socket.emit("next");
+        }
+        $('#prev').on('click', emitPrev);
+        $('#next').on('click', emitNext);
+
+        $('#play').on('click', emitPlayPause);
+        $('#play_track').on('click', onPlayTitle);
+
+        socket.emit("isPlaying");
       });
     </script>
   </head>
@@ -57,8 +64,8 @@
       <div class="append">
         <div class="pbc">
           <select name="Select Service" id="serviceSelector">
-            <option value="yt"><i class="fa fa-youtube-play"></i>YouTube</option>
-            <option value="fs"><i class="fa fa-file"></i>Filesystem</option>
+            <option value="youtube"><i class="fa fa-youtube-play"></i>YouTube</option>
+            <option value="filesystem"><i class="fa fa-file"></i>Filesystem</option>
           </select>
         </div>
         <div class="pbc"><input type="text" id="path_input"/></div>
