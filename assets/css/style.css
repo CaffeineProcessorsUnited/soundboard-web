@@ -264,13 +264,21 @@ a:hover {
   margin: 5px;
 }
 #page .pbc a {
-  font-size: 30px;
-  line-height: 30px;
+  display: inline-table;
+  height: 30px;
+  font-size: 16px;
   vertical-align: middle;
-  display: inline-block;
-  width: 30px;
   text-align: center;
   overflow: hidden;
+  margin: 0px;
+}
+#page .pbc a div {
+  display: table-cell;
+  vertical-align: middle;
+}
+#page .pbc a .fa {
+  font-size: 30px;
+  width: 30px;
 }
 #page .pbc a:active,
 #page .pbc a:hover {
@@ -288,6 +296,7 @@ a:hover {
   color: #FFF;
   font-size: 18px;
   vertical-align: middle;
+  margin: 0px;
   padding: 2px;
   height: 30px;
 }
