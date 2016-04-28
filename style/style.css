@@ -24,6 +24,9 @@ header {
   bottom: 0px;
   padding-top: 10px;
 }
+#add_track_container {
+  margin: 5px;
+}
 .playback_button {
   border: 1px solid black;
 }
