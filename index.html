@@ -13,11 +13,20 @@
         });
         socket.on('get_queue',function onGetCurrentQueue(data){
           console.log(data);
+          var tracks = data["queue"];
+          $('.queue').empty();
+          tracks.forEach(function(track){
+            var elem = $('<li></li>').html(track["path"]);
+            if(track["id"]==data["currentTrack"]["id"]){
+              //TODO Malte do the css magic
+            }
+            $('.queue').append(elem);
+          });
           $('#tracktitle').text();
         });
         socket.on('poll', function onPoll() {
           socket.emit('isPlaying');
-          socket.emit('get_current_queue');
+          socket.emit('get_queue');
         })
         function emitPlayPause() {
           if ($('#play').hasClass('playing')) {
@@ -43,7 +52,6 @@
         function onPlayTitle(){
           console.log("send track");
           socket.emit("add_track",{"service":$('#serviceSelector').val(),"path":$('#path_input').val(),'next':true});
-          socket.emit("next");
         }
         function onAddToQueue() {
           socket.emit("add_track",{"service":$('#serviceSelector').val(),"path":$('#path_input').val(),'next':false});
@@ -55,6 +63,7 @@
         $('#play_track').on('click', onPlayTitle);
         $('#add_to_queue').on('click', onAddToQueue);
         socket.emit("isPlaying");
+        socket.emit("get_queue");
       });
     </script>
   </head>
