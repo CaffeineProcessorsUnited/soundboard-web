@@ -257,38 +257,44 @@ a:hover {
   width: 100%;
   text-align: center;
 }
-#page input,
-#page select {
+#page .pbc {
+  display: inline-block;
+  height: 30px;
+  overflow: hidden;
+  margin: 5px;
+}
+#page .pbc a {
+  font-size: 30px;
+  line-height: 30px;
+  vertical-align: middle;
+  display: inline-block;
+  width: 30px;
+  text-align: center;
+  overflow: hidden;
+}
+#page .pbc a:active,
+#page .pbc a:hover {
+  color: #2CB6CC;
+}
+#page .pbc input,
+#page .pbc select {
   box-sizing: border-box;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   display: inline-block;
-  border: 1px solid #FF50A2;
+  border: 2px solid #FF50A2;
   border-radius: 4px;
   background-color: #000;
   color: #FFF;
   font-size: 18px;
   vertical-align: middle;
-  margin: 5px;
   padding: 2px;
+  height: 30px;
 }
-#page input:focus,
-#page select:focus {
+#page .pbc input:focus,
+#page .pbc select:focus {
   outline: none;
   border: 1px solid #2CB6CC;
-}
-#page .pbc {
-  font-size: 28px;
-  line-height: 28px;
-  display: inline-block;
-  margin: 5px;
-  padding: 1px 0px;
-  width: 30px;
-  text-align: center;
-}
-#page .pbc:active,
-#page .pbc:hover {
-  color: #2CB6CC;
 }
 #page .heart:hover {
   color: #FF2A28;

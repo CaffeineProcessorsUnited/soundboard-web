@@ -3,7 +3,7 @@
     <title>Soundboard Webinterface</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="http://localhost:8080/socket.io/socket.io.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="assets/js/jquery.min.js"></script>
     <script>
       var socket;
       $(document).ready(function onDocumentReady(){
@@ -65,13 +65,18 @@
     </div>
     <div class="footer">
       <div class="grid">
-        <div class="col col-3"></div>
-        <div class="col col-3">
-          <a class="pbc" id="prev"><i class="fa fa-backward"></i></a>
-          <a class="pbc" id="play"><i class="fa fa-play"></i></a>
-          <a class="pbc" id="next"><i class="fa fa-forward"></i></a>
+        <div class="row">
+          <div class="col col-12">
+            Now playing: <span id="title"></span>
+          </div>
         </div>
-        <div class="col col-3"></div>
+        <div class="row">
+          <div class="col col-12">
+            <div class="pbc"><a id="prev"><i class="fa fa-backward"></i></a></div>
+            <div class="pbc"><a id="play"><i class="fa fa-play"></i></a></div>
+            <div class="pbc"><a id="next"><i class="fa fa-forward"></i></a></div>
+          </div>
+        </div>
       </div>
     </div>
   </body>
