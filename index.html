@@ -84,6 +84,9 @@
         function onClearQueue() {
           socket.emit("clear_queue");
         }
+        function onStop() {
+          socket.emit("stop");
+        }
         $('#prev').on('click', emitPrev);
         $('#next').on('click', emitNext);
 
@@ -91,6 +94,7 @@
         $('#play_track').on('click', onPlayTitle);
         $('#add_to_queue').on('click', onAddToQueue);
         $('#clear_queue').on('click', onClearQueue);
+        $('#stop').on('click',onStop);
         socket.emit("isPlaying");
         socket.emit("get_queue");
       });
