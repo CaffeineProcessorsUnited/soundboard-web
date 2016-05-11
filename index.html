@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="http://localhost:8080/socket.io/socket.io.js"></script>
     <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/filelist.js"></script>
     <script>
       var socket;
       $(document).ready(function onDocumentReady() {
@@ -43,11 +44,46 @@
           socket.emit('isPlaying');
           socket.emit('get_queue');
         });
+        socket.on('getFiles', function onGetFiles(data) {
+          console.log("filelist");
+          console.log(data);
+          generate_filelist($('.fm .files'), data["files"]);
+          $('.fm .files').find('a').on('click', function() {
+            var e = $(this);
+            var path = e.attr('data-path');
+            alert(path);
+          });
+          CollapsibleLists.applyTo($('.fm .files')[0]);
+        });
+        function generate_filelist(parent, data, title) {
+          if (title === undefined) {
+            title = "Files"
+          }
+          console.log(title);
+          parent.empty();
+          if (typeof data === "object") {
+            parent.append($('<i>' + title + '</i>'));
+            var ul = $('<ul></ul>');
+            for (var k in data) {
+              if (data.hasOwnProperty(k)) {
+                  var childs = $('<li></li>');
+                  generate_filelist(childs, data[k], k);
+                  ul.append(childs);
+              }
+            }
+            parent.append(ul);
+          } else {
+            console.log(title + " => " + data);
+            parent.append($('<a data-path="' + data + '" href="#">' + title + '</li>'));
+          }
+        }
         function generate_controls() {
           var controls = $('<div></div>');
           controls.addClass('pbc');
+          controls.append(generate_action('play', 'play'));
           controls.append(generate_action('up', 'chevron-up'));
           controls.append(generate_action('down', 'chevron-down'));
+          controls.append(generate_action('remove', 'remove'));
           return controls;
         }
         function generate_action(name, icon) {
@@ -74,7 +110,7 @@
         function emitPrev() {
           socket.emit('prev');
         }
-        function onPlayTitle(){
+        function onPlayTitle() {
           console.log("send track");
           socket.emit("add_track",{"service":$('#serviceSelector').val(),"path":$('#path_input').val(),'next':true});
         }
@@ -97,6 +133,7 @@
         $('#stop').on('click',onStop);
         socket.emit("isPlaying");
         socket.emit("get_queue");
+        socket.emit("getFiles");
       });
     </script>
   </head>
@@ -105,21 +142,24 @@
       <h1>Soundboard Webinterface</h1>
     </div>
     <div class="content">
-      <ul class="queue">
-
-      </ul>
+      <div class="fm">
+        <ul class="files"></ul>
+      </div>
+      <ul class="queue"></ul>
       <div class="append">
         <div class="pbc">
           <select name="Select Service" id="serviceSelector">
-            <option value="youtube"><i class="fa fa-youtube-play"></i>YouTube</option>
-            <option value="filesystem"><i class="fa fa-file"></i>Filesystem</option>
+            <option value="youtube">YouTube</option>
+            <option value="filesystem">Filesystem</option>
+            <option value="url">URL</option>
           </select>
         </div>
-        <div class="pbc"><input type="text" id="path_input"/></div>
+        <div class="pbc"><span id="extraSelector"></span><input type="text" id="path_input"/></div>
         <div class="pbc"><a class="pbc" id="play_track" href="#"><i class="fa fa-play"></i><div> Play this track</div></a></div>
         <div class="pbc"><a id="add_to_queue" href="#"><i class="fa fa-plus"></i><div> Add to Queue</div></a></div>
         <div class="pbc"><a id="clear_queue" href="#"><i class="fa fa-eject"></i><div> Clear Queue</div></a></div>
       </div>
+      <div class="push"></div>
     </div>
     <div class="footer">
       <div class="grid">
