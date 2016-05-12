@@ -236,6 +236,22 @@ a:hover {
 #page > .content .queue .item .pbc a:last-child {
   margin-right: 0px;
 }
+#page > .content .queue .item:hover {
+  color: #2CB6CC;
+}
+#page > .content .queue .current {
+  background-color: #0a0b0d;
+}
+#page > .content .playlists {
+  padding: 10px;
+}
+#page > .content .playlists .item {
+  list-style-type: none;
+  width: 100%;
+}
+#page > .content .playlists .item:hover {
+  color: #2CB6CC;
+}
 #page > .footer {
   display: table;
   width: 100%;

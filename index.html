@@ -28,6 +28,9 @@
             elem.append(title);
             elem.append(generate_controls());
             elem.append($('<div class="clearfix"></div>'));
+            elem.on('click',function(){
+              onPlaySelectedTrack($(this).attr('data-id'));
+            });
             $('.queue').append(elem);
           });
           $('.queue').find('a').on('click', function() {
@@ -60,7 +63,11 @@
             playlists.forEach(function(playlistname){
               var elem = $('<li></li>');
               elem.addClass('item');
+              elem.attr('playlist_name',playlistname);
               elem.html(playlistname);
+              elem.on('click',function(){
+                onLoadPlaylist($(this).attr('playlist_name'));
+              });
               $('.playlists').append(elem);
             });
           }
@@ -109,6 +116,9 @@
         function onStop() {
           socket.emit("stop");
         }
+        function onLoadPlaylist(name){
+          socket.emit("playPlaylist",{'name':name,'playing':true});
+        }
         function onSavePlaylist(){
           if($('#playlistname_input').val()!=""){
               socket.emit("save_queue_to_playlist",{"playlistname":$('#playlistname_input').val()});
@@ -118,6 +128,9 @@
             window.alert('You need to give the Playlist a name');
           }
         };
+        function onPlaySelectedTrack(id){
+          socket.emit('playtrack',{'id':id});
+        }
         $('#prev').on('click', emitPrev);
         $('#next').on('click', emitNext);
 
