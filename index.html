@@ -43,6 +43,26 @@
           socket.emit('isPlaying');
           socket.emit('get_queue');
         });
+        socket.on('get_playlist', function onGetPlaylist(data){
+          console.log('playlists');
+          console.log(data);
+          if(data['playlists'].length==0){
+            var elem = $('<li></li>');
+            elem.addClass('item');
+            elem.html('No Playlists');
+            $('.playlists').append(elem);
+          }
+          else {
+            var playlists = data['playlists'];
+            console.log(playlists);
+            playlists.forEach(function(playlistname){
+              var elem = $('<li></li>');
+              elem.addClass('item');
+              elem.html(playlistname);
+            });
+            $('.playlists').append(elem);
+          }
+        });
         function generate_controls() {
           var controls = $('<div></div>');
           controls.addClass('pbc');
@@ -97,6 +117,7 @@
         $('#stop').on('click',onStop);
         socket.emit("isPlaying");
         socket.emit("get_queue");
+        socket.emit("get_playlist",{"name":undefined});
       });
     </script>
   </head>
@@ -105,9 +126,6 @@
       <h1>Soundboard Webinterface</h1>
     </div>
     <div class="content">
-      <ul class="queue">
-
-      </ul>
       <div class="append">
         <div class="pbc">
           <select name="Select Service" id="serviceSelector">
@@ -120,6 +138,10 @@
         <div class="pbc"><a id="add_to_queue" href="#"><i class="fa fa-plus"></i><div> Add to Queue</div></a></div>
         <div class="pbc"><a id="clear_queue" href="#"><i class="fa fa-eject"></i><div> Clear Queue</div></a></div>
       </div>
+      <ul class="queue">
+      </ul>
+      <ul class="playlists">
+      </ul>
     </div>
     <div class="footer">
       <div class="grid">
