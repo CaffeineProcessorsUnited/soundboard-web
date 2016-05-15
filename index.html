@@ -48,7 +48,6 @@
           socket.emit('isPlaying');
           socket.emit('get_queue');
         });
-<<<<<<< HEAD
         socket.on('getFiles', function onGetFiles(data) {
           console.log("filelist");
           console.log(data);
@@ -82,7 +81,6 @@
             parent.append($('<a data-path="' + data + '" href="#">' + title + '</li>'));
           }
         }
-=======
         socket.on('get_playlist', function onGetPlaylist(data){
           console.log('playlists');
           console.log(data);
@@ -99,16 +97,15 @@
             playlists.forEach(function(playlistname){
               var elem = $('<li></li>');
               elem.addClass('item');
-              elem.attr('playlist_name',playlistname);
+              elem.attr('data-name',playlistname);
               elem.html(playlistname);
               elem.on('click',function(){
-                onLoadPlaylist($(this).attr('playlist_name'));
+                onLoadPlaylist($(this).attr('data-name'));
               });
               $('.playlists').append(elem);
             });
           }
         });
->>>>>>> master
         function generate_controls() {
           var controls = $('<div></div>');
           controls.addClass('pbc');
@@ -142,13 +139,8 @@
         function emitPrev() {
           socket.emit('prev');
         }
-<<<<<<< HEAD
-        function onPlayTitle() {
-          console.log("send track");
-=======
         function onPlayTitle(){
           //console.log("send track");
->>>>>>> master
           socket.emit("add_track",{"service":$('#serviceSelector').val(),"path":$('#path_input').val(),'next':true});
         }
         function onAddToQueue() {
@@ -186,11 +178,8 @@
         $('#save_queue_to_playlist').on('click',onSavePlaylist);
         socket.emit("isPlaying");
         socket.emit("get_queue");
-<<<<<<< HEAD
         socket.emit("getFiles");
-=======
         socket.emit("get_playlist",{"name":undefined});
->>>>>>> master
       });
     </script>
   </head>
@@ -199,13 +188,10 @@
       <h1>Soundboard Webinterface</h1>
     </div>
     <div class="content">
-<<<<<<< HEAD
       <div class="fm">
         <ul class="files"></ul>
       </div>
       <ul class="queue"></ul>
-=======
->>>>>>> master
       <div class="append">
         <div class="pbc">
           <select name="Select Service" id="serviceSelector">
@@ -219,9 +205,6 @@
         <div class="pbc"><a id="add_to_queue" href="#"><i class="fa fa-plus"></i><div> Add to Queue</div></a></div>
         <div class="pbc"><a id="clear_queue" href="#"><i class="fa fa-eject"></i><div> Clear Queue</div></a></div>
       </div>
-<<<<<<< HEAD
-      <div class="push"></div>
-=======
       <h3>Current Queue</h3>
       <ul class="queue">
       </ul>
@@ -230,7 +213,7 @@
       <h3>Playlists</h3>
       <ul class="playlists">
       </ul>
->>>>>>> master
+      <div class="push"></div>
     </div>
     <div class="footer">
       <div class="grid">
