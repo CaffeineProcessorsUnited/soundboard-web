@@ -7,6 +7,7 @@
     <script src="assets/js/filelist.js"></script>
     <script>
       var socket;
+      var tracks;
       $(document).ready(function onDocumentReady() {
         socket = io.connect('http://localhost:8080');
         socket.on('isPlaying', function onIsPlaying(data) {
@@ -14,7 +15,7 @@
         });
         socket.on('get_queue',function onGetCurrentQueue(data){
           console.log(data);
-          var tracks = data["queue"];
+          tracks = data["queue"];
           $('.queue').empty();
           tracks.forEach(function(track, index){
             var elem = $('<li></li>');
@@ -28,6 +29,9 @@
             elem.append(title);
             elem.append(generate_controls());
             elem.append($('<div class="clearfix"></div>'));
+            elem.on('click',function(){
+              onPlaySelectedTrack($(this).attr('data-id'));
+            });
             $('.queue').append(elem);
           });
           $('.queue').find('a').on('click', function() {
@@ -44,6 +48,7 @@
           socket.emit('isPlaying');
           socket.emit('get_queue');
         });
+<<<<<<< HEAD
         socket.on('getFiles', function onGetFiles(data) {
           console.log("filelist");
           console.log(data);
@@ -77,6 +82,33 @@
             parent.append($('<a data-path="' + data + '" href="#">' + title + '</li>'));
           }
         }
+=======
+        socket.on('get_playlist', function onGetPlaylist(data){
+          console.log('playlists');
+          console.log(data);
+          $('.playlists').empty();
+          if(data['playlists'].length==0){
+            var elem = $('<li></li>');
+            elem.addClass('item');
+            elem.html('No Playlists');
+            $('.playlists').append(elem);
+          }
+          else {
+            var playlists = data['playlists'];
+            console.log(playlists);
+            playlists.forEach(function(playlistname){
+              var elem = $('<li></li>');
+              elem.addClass('item');
+              elem.attr('playlist_name',playlistname);
+              elem.html(playlistname);
+              elem.on('click',function(){
+                onLoadPlaylist($(this).attr('playlist_name'));
+              });
+              $('.playlists').append(elem);
+            });
+          }
+        });
+>>>>>>> master
         function generate_controls() {
           var controls = $('<div></div>');
           controls.addClass('pbc');
@@ -110,8 +142,13 @@
         function emitPrev() {
           socket.emit('prev');
         }
+<<<<<<< HEAD
         function onPlayTitle() {
           console.log("send track");
+=======
+        function onPlayTitle(){
+          //console.log("send track");
+>>>>>>> master
           socket.emit("add_track",{"service":$('#serviceSelector').val(),"path":$('#path_input').val(),'next':true});
         }
         function onAddToQueue() {
@@ -123,6 +160,21 @@
         function onStop() {
           socket.emit("stop");
         }
+        function onLoadPlaylist(name){
+          socket.emit("playPlaylist",{'name':name,'playing':true});
+        }
+        function onSavePlaylist(){
+          if($('#playlistname_input').val()!=""){
+              socket.emit("save_queue_to_playlist",{"playlistname":$('#playlistname_input').val()});
+              socket.emit("get_playlist",{"name":undefined});
+          }
+          else {
+            window.alert('You need to give the Playlist a name');
+          }
+        };
+        function onPlaySelectedTrack(id){
+          socket.emit('playtrack',{'id':id});
+        }
         $('#prev').on('click', emitPrev);
         $('#next').on('click', emitNext);
 
@@ -131,9 +183,14 @@
         $('#add_to_queue').on('click', onAddToQueue);
         $('#clear_queue').on('click', onClearQueue);
         $('#stop').on('click',onStop);
+        $('#save_queue_to_playlist').on('click',onSavePlaylist);
         socket.emit("isPlaying");
         socket.emit("get_queue");
+<<<<<<< HEAD
         socket.emit("getFiles");
+=======
+        socket.emit("get_playlist",{"name":undefined});
+>>>>>>> master
       });
     </script>
   </head>
@@ -142,10 +199,13 @@
       <h1>Soundboard Webinterface</h1>
     </div>
     <div class="content">
+<<<<<<< HEAD
       <div class="fm">
         <ul class="files"></ul>
       </div>
       <ul class="queue"></ul>
+=======
+>>>>>>> master
       <div class="append">
         <div class="pbc">
           <select name="Select Service" id="serviceSelector">
@@ -159,7 +219,18 @@
         <div class="pbc"><a id="add_to_queue" href="#"><i class="fa fa-plus"></i><div> Add to Queue</div></a></div>
         <div class="pbc"><a id="clear_queue" href="#"><i class="fa fa-eject"></i><div> Clear Queue</div></a></div>
       </div>
+<<<<<<< HEAD
       <div class="push"></div>
+=======
+      <h3>Current Queue</h3>
+      <ul class="queue">
+      </ul>
+      <div class="pbc"><input type="text" id="playlistname_input"/></div>
+      <div class="pbc"><a id="save_queue_to_playlist" href="#"><i class="fa fa-floppy-o"></i><div> Save Queue</div></a></div>
+      <h3>Playlists</h3>
+      <ul class="playlists">
+      </ul>
+>>>>>>> master
     </div>
     <div class="footer">
       <div class="grid">

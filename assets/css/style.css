@@ -249,6 +249,22 @@ a:hover {
   font-size: 26px;
   width: 26px;
 }
+#page > .content .queue .item:hover {
+  color: #2CB6CC;
+}
+#page > .content .queue .current {
+  background-color: #0a0b0d;
+}
+#page > .content .playlists {
+  padding: 10px;
+}
+#page > .content .playlists .item {
+  list-style-type: none;
+  width: 100%;
+}
+#page > .content .playlists .item:hover {
+  color: #2CB6CC;
+}
 #page > .footer {
   display: table;
   width: 100%;
