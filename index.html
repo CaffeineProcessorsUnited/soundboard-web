@@ -7,13 +7,29 @@
     <script>
       var socket;
       var tracks;
+      var suffle = false;
+      var repeat = false;
       $(document).ready(function onDocumentReady() {
         socket = io.connect('http://localhost:8080');
         socket.on('isPlaying', function onIsPlaying(data) {
           $('#play')[data["playing"] ? 'addClass' : 'removeClass']('playing');
         });
         socket.on('get_queue',function onGetCurrentQueue(data){
-          console.log(data);
+          //console.log(data);
+          shuffle = data.shuffle;
+          if(shuffle==true){
+            $('#shuffle').parent().addClass('inuse');
+          }
+          else{
+            $('#shuffle').parent().removeClass('inuse');
+          }
+          repeat = data.repeat;
+          if(repeat==true){
+            $('#repeat').parent().addClass('inuse');
+          }
+          else{
+            $('#repeat').parent().removeClass('inuse');
+          }
           tracks = data["queue"];
           $('.queue').empty();
           tracks.forEach(function(track, index){
@@ -128,6 +144,14 @@
             window.alert('You need to give the Playlist a name');
           }
         };
+        function toggleShuffle(){
+          socket.emit('toggleShuffle');
+          socket.emit('get_queue');
+        };
+        function toggleRepeat(){
+          socket.emit('toggleRepeat');
+          socket.emit('get_queue');
+        }
         function onPlaySelectedTrack(id){
           socket.emit('playtrack',{'id':id});
         }
@@ -140,6 +164,8 @@
         $('#clear_queue').on('click', onClearQueue);
         $('#stop').on('click',onStop);
         $('#save_queue_to_playlist').on('click',onSavePlaylist);
+        $('#repeat').on('click',toggleRepeat);
+        $('#shuffle').on('click',toggleShuffle);
         socket.emit("isPlaying");
         socket.emit("get_queue");
         socket.emit("get_playlist",{"name":undefined});
@@ -185,6 +211,8 @@
             <div class="pbc"><a href="#" id="play"><i class="fa fa-play"></i></a></div>
             <div class="pbc"><a href="#" id="stop"><i class="fa fa-stop"></i></a></div>
             <div class="pbc"><a href="#" id="next"><i class="fa fa-forward"></i></a></div>
+            <div class="pbc"><a href="#" id="repeat"><i class="fa fa-repeat"></i></a></div>
+            <div class="pbc"><a href="#" id="shuffle"><i class="fa fa-random"></i></a></div>
           </div>
         </div>
       </div>
