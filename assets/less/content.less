@@ -13,20 +13,28 @@
     content: "";
     height: 80px;
   }
+  .push {
+    height: @footer-height;
+  }
   .queue {
     padding: 10px;
     .item {
+      &.current {
+        background-color: lighten(@background-color, 10%);
+      }
       list-style-type: none;
       width: 100%;
       .title {
         float: left;
         line-height: 30px;
       }
+
       .pbc {
         float: right;
         width: 200px;
         margin: 0px;
         a {
+          height: 30px;
           &:first-child {
             margin-left: 0px;
           }
@@ -35,6 +43,12 @@
           }
           margin-left: 3px;
           margin-right: 3px;
+          .fa {
+            line-height: 30px;
+            vertical-align: middle;
+            font-size: 26px;
+            width: 26px;
+          }
         }
       }
       &:hover{

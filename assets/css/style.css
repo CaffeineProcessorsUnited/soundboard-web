@@ -210,12 +210,18 @@ a:hover {
   content: "";
   height: 80px;
 }
+#page > .content .push {
+  height: 80px;
+}
 #page > .content .queue {
   padding: 10px;
 }
 #page > .content .queue .item {
   list-style-type: none;
   width: 100%;
+}
+#page > .content .queue .item.current {
+  background-color: #3b404d;
 }
 #page > .content .queue .item .title {
   float: left;
@@ -227,6 +233,7 @@ a:hover {
   margin: 0px;
 }
 #page > .content .queue .item .pbc a {
+  height: 30px;
   margin-left: 3px;
   margin-right: 3px;
 }
@@ -235,6 +242,12 @@ a:hover {
 }
 #page > .content .queue .item .pbc a:last-child {
   margin-right: 0px;
+}
+#page > .content .queue .item .pbc a .fa {
+  line-height: 30px;
+  vertical-align: middle;
+  font-size: 26px;
+  width: 26px;
 }
 #page > .content .queue .item:hover {
   color: #2CB6CC;
@@ -351,6 +364,50 @@ a:hover {
 #page .pbc select:focus {
   outline: none;
   border: 1px solid #2CB6CC;
+}
+#page .fm {
+  height: 200px;
+  -moz-user-select: none;
+  position: relative;
+}
+#page .fm .files {
+  height: 100%;
+  overflow-y: auto;
+  margin: 0 0 0 -1.5em;
+  padding: 0 0 0 1.5em;
+}
+#page .fm .files ul {
+  background: url('/assets/img/filelist/list-item-contents.png') repeat-y left;
+}
+#page .fm .files li {
+  margin: 0;
+  padding: 0;
+  background: url('/assets/img/filelist/list-item-root.png') no-repeat top left;
+  list-style-position: inside;
+  list-style-image: url('/assets/img/filelist/button.png');
+  cursor: auto;
+}
+#page .fm .files li.collapsibleListOpen {
+  list-style-image: url('/assets/img/filelist/button-open.png');
+  cursor: pointer;
+  background-image: url('/assets/img/filelist/list-item-open.png');
+}
+#page .fm .files li.collapsibleListOpen.lastChild {
+  background-image: url('/assets/img/filelist/list-item-last-open.png');
+}
+#page .fm .files li.collapsibleListClosed {
+  list-style-image: url('/assets/img/filelist/button-closed.png');
+  cursor: pointer;
+}
+#page .fm .files li.lastChild {
+  background-image: url('/assets/img/filelist/list-item-last.png');
+}
+#page .fm .files li.lastChild > ul {
+  background-image: none;
+}
+#page .fm .files li li {
+  background-image: url('/assets/img/filelist/list-item.png');
+  padding-left: 1.5em;
 }
 #page .heart:hover {
   color: #FF2A28;
