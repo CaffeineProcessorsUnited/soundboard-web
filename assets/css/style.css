@@ -269,7 +269,7 @@ a:hover {
   color: #2CB6CC;
 }
 #page > .footer {
-  position: absolute;
+  position: fixed;
   bottom: 0px;
   display: table;
   width: 100%;
