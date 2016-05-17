@@ -16,8 +16,33 @@
   .push {
     height: @footer-height;
   }
-  .queue {
+  .list_title{
+    background-color: @brand-primary;
+    color: #FFF;
+    margin-left: 10px;
+    margin-right: 10px;
+    padding: 5px;
+  }
+  .list_bottom{
+    border-style: solid;
+    border-color: @brand-primary;
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-top-width: 0px;
+    color: #FFF;
+    margin-left: 10px;
+    margin-right: 10px;
+    padding: 5px;
+    margin-bottom: 5px;
+  }
+  .list {
+    margin-left: 10px;
+    margin-right: 10px;
     padding: 10px;
+    border-width: 2px;
+    border-color: @brand-primary;
+    border-style: solid;
     .item {
       &.current {
         background-color: lighten(@background-color, 10%);
@@ -31,7 +56,7 @@
 
       .pbc {
         float: right;
-        width: 200px;
+        //width: 200px;
         margin: 0px;
         a {
           height: 30px;

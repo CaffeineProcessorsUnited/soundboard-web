@@ -19,17 +19,17 @@
           //console.log(data);
           shuffle = data.shuffle;
           if(shuffle==true){
-            $('#shuffle').parent().addClass('inuse');
+            $('#shuffle').children().addClass('inuse');
           }
           else{
-            $('#shuffle').parent().removeClass('inuse');
+            $('#shuffle').children().removeClass('inuse');
           }
           repeat = data.repeat;
           if(repeat==true){
-            $('#repeat').parent().addClass('inuse');
+            $('#repeat').children().addClass('inuse');
           }
           else{
-            $('#repeat').parent().removeClass('inuse');
+            $('#repeat').children().removeClass('inuse');
           }
           tracks = data["queue"];
           $('.queue').empty();
@@ -45,9 +45,6 @@
             elem.append(title);
             elem.append(generate_controls());
             elem.append($('<div class="clearfix"></div>'));
-            elem.on('click',function(){
-              onPlaySelectedTrack($(this).attr('data-id'));
-            });
             $('.queue').append(elem);
           });
           $('.queue').find('a').on('click', function() {
@@ -56,7 +53,22 @@
             var i = e.closest('.item');
             var id = i.attr('data-id');
             var index = i.attr('data-index');
-            alert(a + '\n' + index + '\n' + id + '\n');
+            //alert(a + '\n' + index + '\n' + id + '\n');
+            if(a=="play"){
+              onPlaySelectedTrack(id);
+            }
+            else if (a=="up") {
+              onMoveTrack(id,parseInt(index)-1);
+            }
+            else if (a=="down") {
+              onMoveTrack(id,parseInt(index)+1);
+            }
+            else if (a=="remove"){
+              onRemoveTrack(id);
+            }
+            else {
+              console.log("What do you want from me?");
+            }
           });
           $('#tracktitle').text();
         });
@@ -191,6 +203,14 @@
         function onPlaySelectedTrack(id){
           socket.emit('playtrack',{'id':id});
         }
+        function onRemoveTrack(id){
+          socket.emit("delete_track",{'id':id});
+          socket.emit("get_queue");
+        }
+        function onMoveTrack(id, newpos){
+          socket.emit("chpos_of_track",{'id':id,'newpos':newpos});
+          socket.emit("get_queue");
+        }
         $('#prev').on('click', emitPrev);
         $('#next').on('click', emitNext);
 
@@ -230,13 +250,15 @@
         <div class="pbc"><a id="add_to_queue" href="#"><i class="fa fa-plus"></i><div> Add to Queue</div></a></div>
         <div class="pbc"><a id="clear_queue" href="#"><i class="fa fa-eject"></i><div> Clear Queue</div></a></div>
       </div>
-      <h3>Current Queue</h3>
-      <ul class="queue">
+      <h3 class="list_title">Current Queue</h3>
+      <ul class="queue list">
       </ul>
-      <div class="pbc"><input type="text" id="playlistname_input"/></div>
-      <div class="pbc"><a id="save_queue_to_playlist" href="#"><i class="fa fa-floppy-o"></i><div> Save Queue</div></a></div>
-      <h3>Playlists</h3>
-      <ul class="playlists">
+      <div class="list_bottom">
+        <div class="pbc"><input type="text" id="playlistname_input"/></div>
+        <div class="pbc"><a id="save_queue_to_playlist" href="#"><i class="fa fa-floppy-o"></i><div> Save Queue</div></a></div>
+      </div>
+      <h3 class="list_title">Playlists</h3>
+      <ul class="playlists list">
       </ul>
       <div class="push"></div>
     </div>

@@ -213,49 +213,73 @@ a:hover {
 #page > .content .push {
   height: 80px;
 }
-#page > .content .queue {
-  padding: 10px;
+#page > .content .list_title {
+  background-color: #FF50A2;
+  color: #FFF;
+  margin-left: 10px;
+  margin-right: 10px;
+  padding: 5px;
 }
-#page > .content .queue .item {
+#page > .content .list_bottom {
+  border-style: solid;
+  border-color: #FF50A2;
+  border-left-width: 2px;
+  border-right-width: 2px;
+  border-bottom-width: 2px;
+  border-top-width: 0px;
+  color: #FFF;
+  margin-left: 10px;
+  margin-right: 10px;
+  padding: 5px;
+  margin-bottom: 5px;
+}
+#page > .content .list {
+  margin-left: 10px;
+  margin-right: 10px;
+  padding: 10px;
+  border-width: 2px;
+  border-color: #FF50A2;
+  border-style: solid;
+}
+#page > .content .list .item {
   list-style-type: none;
   width: 100%;
 }
-#page > .content .queue .item.current {
+#page > .content .list .item.current {
   background-color: #3b404d;
 }
-#page > .content .queue .item .title {
+#page > .content .list .item .title {
   float: left;
   line-height: 30px;
 }
-#page > .content .queue .item .pbc {
+#page > .content .list .item .pbc {
   float: right;
-  width: 200px;
   margin: 0px;
 }
-#page > .content .queue .item .pbc a {
+#page > .content .list .item .pbc a {
   height: 30px;
   margin-left: 3px;
   margin-right: 3px;
 }
-#page > .content .queue .item .pbc a:first-child {
+#page > .content .list .item .pbc a:first-child {
   margin-left: 0px;
 }
-#page > .content .queue .item .pbc a:last-child {
+#page > .content .list .item .pbc a:last-child {
   margin-right: 0px;
 }
-#page > .content .queue .item .pbc a .fa {
+#page > .content .list .item .pbc a .fa {
   line-height: 30px;
   vertical-align: middle;
   font-size: 26px;
   width: 26px;
 }
-#page > .content .queue .item:hover {
+#page > .content .list .item:hover {
   color: #2CB6CC;
 }
-#page > .content .queue .item:inuse {
+#page > .content .list .item:inuse {
   color: #2CB6CC;
 }
-#page > .content .queue .current {
+#page > .content .list .current {
   background-color: #0a0b0d;
 }
 #page > .content .playlists {
@@ -343,6 +367,9 @@ a:hover {
 #page .pbc a:active,
 #page .pbc a:hover {
   color: #2CB6CC;
+}
+#page .pbc a .inuse {
+  color: #B24E1B;
 }
 #page .pbc input,
 #page .pbc select {
