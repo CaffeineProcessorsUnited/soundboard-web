@@ -234,9 +234,6 @@
       <h1>Soundboard Webinterface</h1>
     </div>
     <div class="content">
-      <div class="fm">
-        <ul class="files"></ul>
-      </div>
       <div class="append">
         <div class="pbc">
           <select name="Select Service" id="serviceSelector">
@@ -250,16 +247,27 @@
         <div class="pbc"><a id="add_to_queue" href="#"><i class="fa fa-plus"></i><div> Add to Queue</div></a></div>
         <div class="pbc"><a id="clear_queue" href="#"><i class="fa fa-eject"></i><div> Clear Queue</div></a></div>
       </div>
-      <h3 class="list_title">Current Queue</h3>
-      <ul class="queue list">
-      </ul>
-      <div class="list_bottom">
-        <div class="pbc"><input type="text" id="playlistname_input"/></div>
-        <div class="pbc"><a id="save_queue_to_playlist" href="#"><i class="fa fa-floppy-o"></i><div> Save Queue</div></a></div>
+      <div class="flow_container">
+        <div class="list_container">
+          <h3 class="list_title">Current Queue</h3>
+            <div class="queue_inner_container">
+              <ul class="queue list">
+              </ul>
+            </div>
+            <div class="list_bottom">
+              <div class="pbc"><input type="text" id="playlistname_input"/></div>
+              <div class="pbc"><a id="save_queue_to_playlist" href="#"><i class="fa fa-floppy-o"></i><div> Save Queue</div></a></div>
+            </div>
+          </div>
+          <div class="list_container">
+            <h3 class="list_title">Playlists</h3>
+            <ul class="playlists list">
+            </ul>
+          </div>
+          <div class="fm">
+            <ul class="files"></ul>
+          </div>
       </div>
-      <h3 class="list_title">Playlists</h3>
-      <ul class="playlists list">
-      </ul>
       <div class="push"></div>
     </div>
     <div class="footer">
