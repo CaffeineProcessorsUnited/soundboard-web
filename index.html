@@ -170,11 +170,21 @@
           service = $('#serviceSelector').attr("data-service");
           path = $('#' + service + '-path').val();
           socket.emit("add_track", {"service": service, "path": path,'next': true});
+          clearInput();
         }
         function onAddToQueue() {
           service = $('#serviceSelector').attr("data-service");
           path = $('#' + service + '-path').val();
           socket.emit("add_track", {"service": service, "path": path,'next': false});
+          clearInput();
+        }
+        function clearInput() {
+          $('#serviceSelector .tab').each(function() {
+            service = $(this).attr("data-service");
+            if (!!service) {
+              $('#' + service + '-path').val("");
+            }
+          });
         }
         function onClearQueue() {
           socket.emit("clear_queue");
