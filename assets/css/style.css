@@ -215,13 +215,6 @@ a:hover {
 #page > .content .push {
   height: 80px;
 }
-#page > .content .tabcontrol .tabs .tab .pbc {
-  display: block;
-}
-#page > .content .tabcontrol .tabs .tab .pbc input {
-  display: block;
-  width: 100%;
-}
 #page > .content .flex.row,
 #page > .content .flex .row {
   width: 100%;
@@ -500,6 +493,13 @@ a:hover {
 }
 #page .tabcontrol .wrapper .tabs .tab.active {
   display: block;
+}
+#page .tabcontrol .wrapper .tabs .tab .pbc {
+  display: block;
+}
+#page .tabcontrol .wrapper .tabs .tab .pbc input {
+  display: block;
+  width: 100%;
 }
 #page .heart:hover {
   color: #FF2A28;
