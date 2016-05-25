@@ -4,6 +4,7 @@
 .header() {
   .box-sizing(border-box);
   position: fixed;
+  z-index: 1001;
   top: 0px;
   width: 100%;
   height: @header-height + @header-padding-top;
@@ -11,6 +12,7 @@
   vertical-align: middle;
   background-color: @background-color-dark;
   border-bottom: @header-border-width solid @brand-primary;
+  text-align: center;
   .content {
     .page-width();
     padding-top: @header-padding-top;

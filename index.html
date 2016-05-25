@@ -300,29 +300,36 @@
       <h1>Soundboard Webinterface</h1>
     </div>
     <div class="content">
-      <div id="serviceSelector" class="tabcontrol">
-        <div class="wrapper">
-          <ul class="nav"></ul>
-          <div class="tabs">
-            <div id="youtube" data-service="youtube" class="tab">
-              <div class="title"><i class="fa fa-youtube-play"></i> YouTube</div>
-              <div class="content">
-                <div class="pbc"><input type="text" id="youtube-path"/></div>
-              </div>
-            </div>
-            <div id="filesystem" data-service="filesystem" class="tab">
-              <div class="title"><i class="fa fa-folder"></i> Filesystem</div>
-              <div class="content">
-                <div class="pbc"><input type="text" id="filesystem-path" readonly/></div>
-                <div class="fm">
-                  <ul class="files"><li></li></ul>
+      <div class="flex">
+        <div class="container">
+          <h3 class="title">Playlists</h3>
+          <div class="content">
+            <div id="serviceSelector" class="tabcontrol">
+              <div class="wrapper">
+                <ul class="nav"></ul>
+                <div class="tabs">
+                  <div id="youtube" data-service="youtube" class="tab">
+                    <div class="title"><i class="fa fa-youtube-play"></i> YouTube</div>
+                    <div class="content">
+                      <div class="pbc"><input type="text" id="youtube-path"/></div>
+                    </div>
+                  </div>
+                  <div id="filesystem" data-service="filesystem" class="tab">
+                    <div class="title"><i class="fa fa-folder"></i> Filesystem</div>
+                    <div class="content">
+                      <div class="pbc"><input type="text" id="filesystem-path" readonly/></div>
+                      <div class="fm">
+                        <ul class="files"><li></li></ul>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="url" data-service="url" class="tab">
+                    <div class="title"><i class="fa fa-link"></i> URL</div>
+                    <div class="content">
+                      <div class="pbc"><input type="text" id="url-path"/></div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div id="url" data-service="url" class="tab">
-              <div class="title"><i class="fa fa-link"></i> URL</div>
-              <div class="content">
-                <div class="pbc"><input type="text" id="url-path"/></div>
               </div>
             </div>
           </div>
@@ -332,23 +339,24 @@
             <div class="pbc"><a id="clear_queue" href="#"><i class="fa fa-eject"></i><div> Clear Queue</div></a></div>
           </div>
         </div>
-      </div>
-      <div class="flow_container">
-        <div class="list_container">
-          <h3 class="list_title">Current Queue</h3>
-            <div class="queue_inner_container">
-              <ul class="queue list">
-              </ul>
-            </div>
-            <div class="list_bottom">
-              <div class="pbc"><input type="text" id="playlistname_input"/></div>
-              <div class="pbc"><a id="save_queue_to_playlist" href="#"><i class="fa fa-floppy-o"></i><div> Save Queue</div></a></div>
-            </div>
+        <div class="container">
+          <h3 class="title">Current Queue</h3>
+          <div class="content">
+            <ul class="queue list"></ul>
           </div>
-          <div class="list_container">
-            <h3 class="list_title">Playlists</h3>
+          <div class="append">
+            <div class="pbc"><input type="text" id="playlistname_input"/></div>
+            <div class="pbc"><a id="save_queue_to_playlist" href="#"><i class="fa fa-floppy-o"></i><div> Save Queue</div></a></div>
+          </div>
+        </div>
+        <div class="container">
+          <h3 class="title">Playlists</h3>
+          <div class="content">
             <ul class="playlists list"></ul>
           </div>
+          <div class="append"></div>
+        </div>
+
       </div>
       <div class="push"></div>
     </div>

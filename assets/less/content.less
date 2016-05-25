@@ -16,28 +16,6 @@
   .push {
     height: @footer-height;
   }
-  .list_title{
-    background-color: @brand-primary;
-    color: #FFF;
-    margin-left: 10px;
-    margin-right: 10px;
-    padding: 5px;
-    width: 494px;
-  }
-  .list_bottom{
-    border-style: solid;
-    border-color: @brand-primary;
-    border-left-width: 2px;
-    border-right-width: 2px;
-    border-bottom-width: 2px;
-    border-top-width: 0px;
-    color: #FFF;
-    margin-left: 10px;
-    margin-right: 10px;
-    padding: 5px;
-    margin-bottom: 5px;
-    width: 490px;
-  }
   .tabcontrol {
     .tabs {
       .tab {
@@ -51,84 +29,90 @@
       }
     }
   }
-  .list {
-    margin-left: 10px;
-    margin-right: 10px;
-    .item {
-      &.current {
-        background-color: lighten(@background-color, 10%);
-      }
-      list-style-type: none;
-      //width: 100%;
-      .title {
-        float: left;
-        line-height: 30px;
-      }
 
-      .pbc {
-        float: right;
-        //width: 200px;
-        margin: 0px;
-        a {
-          height: 30px;
-          &:first-child {
-            margin-left: 0px;
+  .flex {
+    &.row, .row {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  }
+
+  .container{
+    display: block;
+    border: 2px solid @brand-primary;
+    margin: 10px 0px;
+    &:first-of-type {
+      margin-top: 0px;
+    }
+    &:last-of-type {
+      margin-bottom: 0px;
+    }
+    & > .title{
+      background-color: @brand-primary;
+      color: #FFF;
+      padding: 5px 10px;
+    }
+    & > .content {
+      .list {
+        list-style-type: none;
+        .item {
+          padding: 0px 5px;
+          &.current {
+            background-color: @background-color-dark;
+            color: @brand-accent;
           }
-          &:last-child {
-            margin-right: 0px;
-          }
-          margin-left: 3px;
-          margin-right: 3px;
-          .fa {
+          //width: 100%;
+          .title {
+            float: left;
             line-height: 30px;
-            vertical-align: middle;
-            font-size: 26px;
-            width: 26px;
+          }
+          .pbc {
+            float: right;
+            //width: 200px;
+            margin: 0px;
+            margin-left: 5px;
+            a {
+              height: 30px;
+              &:first-child {
+                margin-left: 0px;
+              }
+              &:last-child {
+                margin-right: 0px;
+              }
+              margin-left: 3px;
+              margin-right: 3px;
+              .fa {
+                line-height: 30px;
+                vertical-align: middle;
+                font-size: 26px;
+                width: 26px;
+              }
+            }
           }
         }
       }
-      &:hover{
-        color: @brand-accent;
-      }
-      &.active{
-        color: @brand-accent;
-      }
-    }
-    .current{
-      background-color: @background-color-dark;
-    }
-  }
-  .flow_container{
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  .list_container{
-    display: inline-block;
-  }
-  .queue_inner_container{
-    overflow: auto;
-    width: 500px;
-    max-height: 400px;
-    border-width: 2px;
-    border-color: @brand-primary;
-    border-style: solid;
-    margin-left: 10px;
-    margin-right: 10px;
-   }
-  .playlists{
-    padding: 10px;
-    .item{
-      list-style-type: none;
-      width: 100%;
-      &:hover{
-          color: @brand-accent;
+      .queue{
+        overflow: auto;
+        max-height: 400px;
+       }
+      .playlists{
+        padding: 10px;
+        .item{
+          list-style-type: none;
+          width: 100%;
+          &:hover{
+              color: @brand-accent;
+          }
+        }
       }
     }
-  }
-  .append {
-
+    & > .append {
+      color: #FFF;
+      border-top: 1px solid @brand-primary;
+      padding: 5px 0px;
+    }
   }
 }
