@@ -69,7 +69,7 @@
           $($('.files li')[0]).find("ul").each(function() {
             $(this).children().last().addClass("lastChild");
           });
-          $('.scroll .page#filesystem .fm .files .collapse').each(function() {
+          $('.tabcontrol .tab#filesystem .fm .files .collapse').each(function() {
             CollapsibleLists.applyTo(this);
           });
           $('.files li').find('a').on('click', function() {
@@ -229,46 +229,46 @@
         socket.emit("getFiles");
         socket.emit("get_playlist",{"name":undefined});
 
-        $('.scroll').each(function() {
-          scroll = $(this);
-          scroll.bind('redraw', function() {
-            if (!!$(this).attr("data-page")) {
-              $(this).find(".page").removeClass("active");
-              $(this).find(".page#" + $(this).attr("data-page")).addClass("active");
+        $('.tabcontrol').each(function() {
+          tabcontrol = $(this);
+          tabcontrol.bind('redraw', function() {
+            if (!!$(this).attr("data-tab")) {
+              $(this).find(".tab").removeClass("active");
+              $(this).find(".tab#" + $(this).attr("data-tab")).addClass("active");
             } else {
-              pages = $(this).find(".page");
-              if (pages.length) {
-                $(this).trigger("setPage", [ $(pages[0]).attr("id") ]);
+              tabs = $(this).find(".tab");
+              if (tabs.length) {
+                $(this).trigger("setTab", [ $(tabs[0]).attr("id") ]);
               }
             }
             initializeJS();
           });
-          scroll.bind('setPage', function(event, id) {
-            page = $(this).find(".page#" + id);
+          tabcontrol.bind('setTab', function(event, id) {
+            tab = $(this).find(".tab#" + id);
             $(this).find('.wrapper .nav a').removeClass("active");
             $(this).find('.wrapper .nav a[data-id="' + id + '"]').addClass("active");
-            if (page.length) {
-              $(this).attr("data-page", id);
-              $(this).attr("data-service", page.attr("data-service"));
+            if (tab.length) {
+              $(this).attr("data-tab", id);
+              $(this).attr("data-service", tab.attr("data-service"));
               $(this).trigger("redraw");
             }
           });
-          var nav = scroll.find(".wrapper .nav");
+          var nav = tabcontrol.find(".wrapper .nav");
           if (nav.length) {
             nav = $(nav[0]);
-            scroll.find(".page").each(function() {
-              page = $(this);
-              id = page.attr("id");
+            tabcontrol.find(".tab").each(function() {
+              tab = $(this);
+              id = tab.attr("id");
               link = $('<a href="#" data-id="' + id + '"></a>');
-              link.html(page.find(".title").html());
-              link.bind("click", { scroll: scroll }, function(event) {
-                event.data.scroll.trigger("setPage", [ $(this).attr("data-id") ]);
+              link.html(tab.find(".title").html());
+              link.bind("click", { tabcontrol: tabcontrol }, function(event) {
+                event.data.tabcontrol.trigger("setTab", [ $(this).attr("data-id") ]);
               });
               item = $('<li></li>');
               item.append(link);
               nav.append(item);
             });
-            scroll.trigger("setPage", [ (!!scroll.attr("data-page")) ? scroll.attr("data-page") : $(scroll.find(".page")[0]).attr("id") ]);
+            tabcontrol.trigger("setTab", [ (!!tabcontrol.attr("data-tab")) ? tabcontrol.attr("data-tab") : $(tabcontrol.find(".tab")[0]).attr("id") ]);
           }
         });
 
@@ -300,17 +300,17 @@
       <h1>Soundboard Webinterface</h1>
     </div>
     <div class="content">
-      <div id="serviceSelector" class="scroll">
+      <div id="serviceSelector" class="tabcontrol">
         <div class="wrapper">
           <ul class="nav"></ul>
-          <div class="pages">
-            <div id="youtube" data-service="youtube" class="page">
+          <div class="tabs">
+            <div id="youtube" data-service="youtube" class="tab">
               <div class="title"><i class="fa fa-youtube-play"></i> YouTube</div>
               <div class="content">
                 <div class="pbc"><input type="text" id="youtube-path"/></div>
               </div>
             </div>
-            <div id="filesystem" data-service="filesystem" class="page">
+            <div id="filesystem" data-service="filesystem" class="tab">
               <div class="title"><i class="fa fa-folder"></i> Filesystem</div>
               <div class="content">
                 <div class="pbc"><input type="text" id="filesystem-path" readonly/></div>
@@ -319,7 +319,7 @@
                 </div>
               </div>
             </div>
-            <div id="url" data-service="url" class="page">
+            <div id="url" data-service="url" class="tab">
               <div class="title"><i class="fa fa-link"></i> URL</div>
               <div class="content">
                 <div class="pbc"><input type="text" id="url-path"/></div>

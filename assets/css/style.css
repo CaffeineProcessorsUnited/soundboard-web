@@ -235,10 +235,10 @@ a:hover {
   margin-bottom: 5px;
   width: 490px;
 }
-#page > .content .scroll .pages .page .pbc {
+#page > .content .tabcontrol .tabs .tab .pbc {
   display: block;
 }
-#page > .content .scroll .pages .page .pbc input {
+#page > .content .tabcontrol .tabs .tab .pbc input {
   display: block;
   width: 100%;
 }
@@ -470,22 +470,22 @@ a:hover {
   background-image: url('/assets/img/filelist/list-item.png');
   padding-left: 24px;
 }
-#page .scroll {
+#page .tabcontrol {
   position: relative;
   width: 100%;
 }
-#page .scroll .wrapper {
+#page .tabcontrol .wrapper {
   border: 2px solid #FF50A2;
 }
-#page .scroll .wrapper .nav {
+#page .tabcontrol .wrapper .nav {
   background-color: #FF50A2;
   list-style-type: none;
   padding: 0px 0px;
 }
-#page .scroll .wrapper .nav li {
+#page .tabcontrol .wrapper .nav li {
   display: inline;
 }
-#page .scroll .wrapper .nav li a {
+#page .tabcontrol .wrapper .nav li a {
   display: inline-block;
   padding: 5px 15px;
   margin: 0px 2px;
@@ -497,26 +497,26 @@ a:hover {
   border-bottom-left-radius: 0px;
   border-bottom-right-radius: 0px;
 }
-#page .scroll .wrapper .nav li a.active {
+#page .tabcontrol .wrapper .nav li a.active {
   background-color: #252830;
 }
-#page .scroll .wrapper .nav li:first-child a {
+#page .tabcontrol .wrapper .nav li:first-child a {
   margin-left: 0px;
 }
-#page .scroll .wrapper .nav li:last-child a {
+#page .tabcontrol .wrapper .nav li:last-child a {
   margin-right: 0px;
 }
-#page .scroll .wrapper .pages {
+#page .tabcontrol .wrapper .tabs {
   padding: 5px;
 }
-#page .scroll .wrapper .pages .page {
+#page .tabcontrol .wrapper .tabs .tab {
   width: 100%;
   display: none;
 }
-#page .scroll .wrapper .pages .page .title {
+#page .tabcontrol .wrapper .tabs .tab .title {
   display: none;
 }
-#page .scroll .wrapper .pages .page.active {
+#page .tabcontrol .wrapper .tabs .tab.active {
   display: block;
 }
 #page .heart:hover {
