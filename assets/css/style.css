@@ -235,6 +235,13 @@ a:hover {
   margin-bottom: 5px;
   width: 490px;
 }
+#page > .content .scroll .pages .page .pbc {
+  display: block;
+}
+#page > .content .scroll .pages .page .pbc input {
+  display: block;
+  width: 100%;
+}
 #page > .content .list {
   margin-left: 10px;
   margin-right: 10px;
@@ -273,7 +280,7 @@ a:hover {
 #page > .content .list .item:hover {
   color: #2CB6CC;
 }
-#page > .content .list .item:inuse {
+#page > .content .list .item.active {
   color: #2CB6CC;
 }
 #page > .content .list .current {
@@ -385,8 +392,8 @@ a:hover {
 #page .pbc a:hover {
   color: #2CB6CC;
 }
-#page .pbc a .inuse {
-  color: #B24E1B;
+#page .pbc a .active {
+  color: #2CB6CC;
 }
 #page .pbc input,
 #page .pbc select {
@@ -409,21 +416,31 @@ a:hover {
   outline: none;
   border: 1px solid #2CB6CC;
 }
+#page .pbc input[readonly],
+#page .pbc select[readonly] {
+  background-color: #252830;
+}
+#page .pbc input[readonly]:focus,
+#page .pbc select[readonly]:focus {
+  outline: none;
+  border: 1px solid #FF50A2;
+}
 #page .fm {
-  height: 200px;
+  -webkit-user-select: none;
   -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   position: relative;
 }
-#page .fm .files {
-  height: 100%;
-  overflow-y: auto;
-  margin: 0 0 0 -1.5em;
-  padding: 0 0 0 1.5em;
-}
 #page .fm .files ul {
+  margin: 0 0 0 -24px;
+  padding: 0 0 0 24px;
+}
+#page .fm .files ul ul {
   background: url('/assets/img/filelist/list-item-contents.png') repeat-y left;
 }
 #page .fm .files li {
+  line-height: 24px;
   margin: 0;
   padding: 0;
   background: url('/assets/img/filelist/list-item-root.png') no-repeat top left;
@@ -451,7 +468,56 @@ a:hover {
 }
 #page .fm .files li li {
   background-image: url('/assets/img/filelist/list-item.png');
-  padding-left: 1.5em;
+  padding-left: 24px;
+}
+#page .scroll {
+  position: relative;
+  width: 100%;
+}
+#page .scroll .wrapper {
+  border: 2px solid #FF50A2;
+}
+#page .scroll .wrapper .nav {
+  background-color: #FF50A2;
+  list-style-type: none;
+  padding: 0px 0px;
+}
+#page .scroll .wrapper .nav li {
+  display: inline;
+}
+#page .scroll .wrapper .nav li a {
+  display: inline-block;
+  padding: 5px 15px;
+  margin: 0px 2px;
+  margin-top: 4px;
+  font-size: 140%;
+  background-color: #0a0b0d;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+#page .scroll .wrapper .nav li a.active {
+  background-color: #252830;
+}
+#page .scroll .wrapper .nav li:first-child a {
+  margin-left: 0px;
+}
+#page .scroll .wrapper .nav li:last-child a {
+  margin-right: 0px;
+}
+#page .scroll .wrapper .pages {
+  padding: 5px;
+}
+#page .scroll .wrapper .pages .page {
+  width: 100%;
+  display: none;
+}
+#page .scroll .wrapper .pages .page .title {
+  display: none;
+}
+#page .scroll .wrapper .pages .page.active {
+  display: block;
 }
 #page .heart:hover {
   color: #FF2A28;

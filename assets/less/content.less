@@ -38,6 +38,19 @@
     margin-bottom: 5px;
     width: 490px;
   }
+  .scroll {
+    .pages {
+      .page {
+        .pbc {
+          display: block;
+          input {
+            display: block;
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
   .list {
     margin-left: 10px;
     margin-right: 10px;
@@ -77,7 +90,7 @@
       &:hover{
         color: @brand-accent;
       }
-      &:inuse{
+      &.active{
         color: @brand-accent;
       }
     }

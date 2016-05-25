@@ -14,29 +14,19 @@
         socket = io.connect('http://localhost:8080');
         socket.on('isPlaying', function onIsPlaying(data) {
           $('#play')[data["playing"] ? 'addClass' : 'removeClass']('playing');
+          $('#play').find(".fa")[data["playing"] ? 'addClass' : 'removeClass']('fa-pause');
+          $('#play').find(".fa")[!data["playing"] ? 'addClass' : 'removeClass']('fa-play');
         });
         socket.on('get_queue',function onGetCurrentQueue(data){
           //console.log(data);
-          shuffle = data.shuffle;
-          if(shuffle==true){
-            $('#shuffle').children().addClass('inuse');
-          }
-          else{
-            $('#shuffle').children().removeClass('inuse');
-          }
-          repeat = data.repeat;
-          if(repeat==true){
-            $('#repeat').children().addClass('inuse');
-          }
-          else{
-            $('#repeat').children().removeClass('inuse');
-          }
+          $('#shuffle').children()[data["shuffle"] ? 'addClass' : 'removeClass']('active');
+          $('#repeat').children()[data["repeat"] ? 'addClass' : 'removeClass']('active');
           tracks = data["queue"];
           $('.queue').empty();
           tracks.forEach(function(track, index){
             var elem = $('<li></li>');
             elem.addClass('item');
-            elem[track["id"] == data["currentTrack"]["id"] ? 'addClass' : 'removeClass']('current');
+            elem[(!!data["currentTrack"] && !!data["currentTrack"]["id"] && track["id"] == data["currentTrack"]["id"]) ? 'addClass' : 'removeClass']('current');
             elem.attr('data-index', index);
             elem.attr('data-id', track["id"]);
             var title = $('<div></div>');
@@ -56,17 +46,13 @@
             //alert(a + '\n' + index + '\n' + id + '\n');
             if(a=="play"){
               onPlaySelectedTrack(id);
-            }
-            else if (a=="up") {
+            } else if (a=="up") {
               onMoveTrack(id,parseInt(index)-1);
-            }
-            else if (a=="down") {
+            } else if (a=="down") {
               onMoveTrack(id,parseInt(index)+1);
-            }
-            else if (a=="remove"){
+            } else if (a=="remove"){
               onRemoveTrack(id);
-            }
-            else {
+            } else {
               console.log("What do you want from me?");
             }
           });
@@ -79,34 +65,46 @@
         socket.on('getFiles', function onGetFiles(data) {
           console.log("filelist");
           console.log(data);
-          generate_filelist($('.fm .files'), data["files"]);
-          $('.fm .files').find('a').on('click', function() {
+          generate_filelist($($('.files li')[0]), data["files"]);
+          $($('.files li')[0]).find("ul").each(function() {
+            $(this).children().last().addClass("lastChild");
+          });
+          $('.scroll .page#filesystem .fm .files .collapse').each(function() {
+            CollapsibleLists.applyTo(this);
+          });
+          $('.files li').find('a').on('click', function() {
             var e = $(this);
             var path = e.attr('data-path');
-            alert(path);
+            $('#filesystem-path').val(path);
           });
-          CollapsibleLists.applyTo($('.fm .files')[0]);
         });
         function generate_filelist(parent, data, title) {
+          ulclass = "";
           if (title === undefined) {
-            title = "Files"
+            title = "Files";
+            ulclass = "collapse";
           }
           console.log(title);
           parent.empty();
           if (typeof data === "object") {
             parent.append($('<i>' + title + '</i>'));
-            var ul = $('<ul></ul>');
-            for (var k in data) {
-              if (data.hasOwnProperty(k)) {
-                  var childs = $('<li></li>');
-                  generate_filelist(childs, data[k], k);
-                  ul.append(childs);
+            if (!isEmpty(data)) {
+              var ul = $('<ul></ul>');
+              if (ulclass != "") {
+                ul.addClass(ulclass);
               }
+              for (var k in data) {
+                if (data.hasOwnProperty(k)) {
+                    var childs = $('<li></li>');
+                    generate_filelist(childs, data[k], k);
+                    ul.append(childs);
+                }
+              }
+              parent.append(ul);
             }
-            parent.append(ul);
           } else {
             console.log(title + " => " + data);
-            parent.append($('<a data-path="' + data + '" href="#">' + title + '</li>'));
+            parent.append($('<a data-path="' + data + '" href="#">' + title + '</a>'));
           }
         }
         socket.on('get_playlist', function onGetPlaylist(data){
@@ -169,10 +167,14 @@
         }
         function onPlayTitle(){
           //console.log("send track");
-          socket.emit("add_track",{"service":$('#serviceSelector').val(),"path":$('#path_input').val(),'next':true});
+          service = $('#serviceSelector').attr("data-service");
+          path = $('#' + service + '-path').val();
+          socket.emit("add_track", {"service": service, "path": path,'next': true});
         }
         function onAddToQueue() {
-          socket.emit("add_track",{"service":$('#serviceSelector').val(),"path":$('#path_input').val(),'next':false});
+          service = $('#serviceSelector').attr("data-service");
+          path = $('#' + service + '-path').val();
+          socket.emit("add_track", {"service": service, "path": path,'next': false});
         }
         function onClearQueue() {
           socket.emit("clear_queue");
@@ -181,12 +183,12 @@
           socket.emit("stop");
         }
         function onLoadPlaylist(name){
-          socket.emit("playPlaylist",{'name':name,'playing':true});
+          socket.emit("playPlaylist", {'name': name, 'playing': true});
         }
         function onSavePlaylist(){
-          if($('#playlistname_input').val()!=""){
-              socket.emit("save_queue_to_playlist",{"playlistname":$('#playlistname_input').val()});
-              socket.emit("get_playlist",{"name":undefined});
+          if($('#playlistname_input').val() != ""){
+              socket.emit("save_queue_to_playlist", {"playlistname": $('#playlistname_input').val()});
+              socket.emit("get_playlist", {"name": undefined});
           }
           else {
             window.alert('You need to give the Playlist a name');
@@ -204,7 +206,7 @@
           socket.emit('playtrack',{'id':id});
         }
         function onRemoveTrack(id){
-          socket.emit("delete_track",{'id':id});
+          socket.emit("delete_track", {'id': id});
           socket.emit("get_queue");
         }
         function onMoveTrack(id, newpos){
@@ -226,6 +228,70 @@
         socket.emit("get_queue");
         socket.emit("getFiles");
         socket.emit("get_playlist",{"name":undefined});
+
+        $('.scroll').each(function() {
+          scroll = $(this);
+          scroll.bind('redraw', function() {
+            if (!!$(this).attr("data-page")) {
+              $(this).find(".page").removeClass("active");
+              $(this).find(".page#" + $(this).attr("data-page")).addClass("active");
+            } else {
+              pages = $(this).find(".page");
+              if (pages.length) {
+                $(this).trigger("setPage", [ $(pages[0]).attr("id") ]);
+              }
+            }
+            initializeJS();
+          });
+          scroll.bind('setPage', function(event, id) {
+            page = $(this).find(".page#" + id);
+            $(this).find('.wrapper .nav a').removeClass("active");
+            $(this).find('.wrapper .nav a[data-id="' + id + '"]').addClass("active");
+            if (page.length) {
+              $(this).attr("data-page", id);
+              $(this).attr("data-service", page.attr("data-service"));
+              $(this).trigger("redraw");
+            }
+          });
+          var nav = scroll.find(".wrapper .nav");
+          if (nav.length) {
+            nav = $(nav[0]);
+            scroll.find(".page").each(function() {
+              page = $(this);
+              id = page.attr("id");
+              link = $('<a href="#" data-id="' + id + '"></a>');
+              link.html(page.find(".title").html());
+              link.bind("click", { scroll: scroll }, function(event) {
+                event.data.scroll.trigger("setPage", [ $(this).attr("data-id") ]);
+              });
+              item = $('<li></li>');
+              item.append(link);
+              nav.append(item);
+            });
+            scroll.trigger("setPage", [ (!!scroll.attr("data-page")) ? scroll.attr("data-page") : $(scroll.find(".page")[0]).attr("id") ]);
+          }
+        });
+
+        function initializeJS() {
+          // Do nothing
+
+        }
+
+        function isEmpty(obj) {
+          // null and undefined are "empty"
+          if (obj == null) return true;
+          // Assume if it has a length property with a non-zero value
+          // that that property is correct.
+          if (obj.length > 0)    return false;
+          if (obj.length === 0)  return true;
+          // Otherwise, does it have any properties of its own?
+          // Note that this doesn't handle
+          // toString and valueOf enumeration bugs in IE < 9
+          for (var key in obj) {
+            if (hasOwnProperty.call(obj, key)) return false;
+          }
+          return true;
+        }
       });
     </script>
   </head>
@@ -234,18 +300,38 @@
       <h1>Soundboard Webinterface</h1>
     </div>
     <div class="content">
-      <div class="append">
-        <div class="pbc">
-          <select name="Select Service" id="serviceSelector">
-            <option value="youtube">YouTube</option>
-            <option value="filesystem">Filesystem</option>
-            <option value="url">URL</option>
-          </select>
+      <div id="serviceSelector" class="scroll">
+        <div class="wrapper">
+          <ul class="nav"></ul>
+          <div class="pages">
+            <div id="youtube" data-service="youtube" class="page">
+              <div class="title"><i class="fa fa-youtube-play"></i> YouTube</div>
+              <div class="content">
+                <div class="pbc"><input type="text" id="youtube-path"/></div>
+              </div>
+            </div>
+            <div id="filesystem" data-service="filesystem" class="page">
+              <div class="title"><i class="fa fa-folder"></i> Filesystem</div>
+              <div class="content">
+                <div class="pbc"><input type="text" id="filesystem-path" readonly/></div>
+                <div class="fm">
+                  <ul class="files"><li></li></ul>
+                </div>
+              </div>
+            </div>
+            <div id="url" data-service="url" class="page">
+              <div class="title"><i class="fa fa-link"></i> URL</div>
+              <div class="content">
+                <div class="pbc"><input type="text" id="url-path"/></div>
+              </div>
+            </div>
+          </div>
+          <div class="append">
+            <div class="pbc"><a class="pbc" id="play_track" href="#"><i class="fa fa-play"></i><div> Play this track</div></a></div>
+            <div class="pbc"><a id="add_to_queue" href="#"><i class="fa fa-plus"></i><div> Add to Queue</div></a></div>
+            <div class="pbc"><a id="clear_queue" href="#"><i class="fa fa-eject"></i><div> Clear Queue</div></a></div>
+          </div>
         </div>
-        <div class="pbc"><span id="extraSelector"></span><input type="text" id="path_input"/></div>
-        <div class="pbc"><a class="pbc" id="play_track" href="#"><i class="fa fa-play"></i><div> Play this track</div></a></div>
-        <div class="pbc"><a id="add_to_queue" href="#"><i class="fa fa-plus"></i><div> Add to Queue</div></a></div>
-        <div class="pbc"><a id="clear_queue" href="#"><i class="fa fa-eject"></i><div> Clear Queue</div></a></div>
       </div>
       <div class="flow_container">
         <div class="list_container">
@@ -261,11 +347,7 @@
           </div>
           <div class="list_container">
             <h3 class="list_title">Playlists</h3>
-            <ul class="playlists list">
-            </ul>
-          </div>
-          <div class="fm">
-            <ul class="files"></ul>
+            <ul class="playlists list"></ul>
           </div>
       </div>
       <div class="push"></div>

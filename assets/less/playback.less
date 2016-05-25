@@ -28,8 +28,8 @@
     &:active, &:hover {
       color: @brand-accent;
     }
-    .inuse{
-      color: @color-squirrel;
+    .active{
+      color: @brand-accent;
     }
   }
   input, select {
@@ -50,6 +50,13 @@
     &:focus {
       outline: none;
       border: 1px solid @brand-accent;
+    }
+    &[readonly] {
+      background-color: @background-color;
+      &:focus {
+        outline: none;
+        border: 1px solid @brand-primary;
+      }
     }
   }
 }
