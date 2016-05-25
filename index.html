@@ -59,12 +59,15 @@
           $('#tracktitle').text();
         });
         socket.on('poll', function onPoll() {
-          socket.emit('isPlaying');
-          socket.emit('get_queue');
+          console.log("poll");
+          socket.emit("isPlaying");
+          socket.emit("get_queue");
+          socket.emit("getFiles");
+          socket.emit("get_playlist", {"name":undefined});
         });
         socket.on('getFiles', function onGetFiles(data) {
           console.log("filelist");
-          console.log(data);
+          //console.log(data);
           generate_filelist($($('.files li')[0]), data["files"]);
           $($('.files li')[0]).find("ul").each(function() {
             $(this).children().last().addClass("lastChild");
@@ -84,7 +87,7 @@
             title = "Files";
             ulclass = "collapse";
           }
-          console.log(title);
+          //console.log(title);
           parent.empty();
           if (typeof data === "object") {
             parent.append($('<i>' + title + '</i>'));
@@ -103,7 +106,7 @@
               parent.append(ul);
             }
           } else {
-            console.log(title + " => " + data);
+            //console.log(title + " => " + data);
             parent.append($('<a data-path="' + data + '" href="#">' + title + '</a>'));
           }
         }
@@ -111,24 +114,41 @@
           console.log('playlists');
           console.log(data);
           $('.playlists').empty();
-          if(data['playlists'].length==0){
+          if(data['playlists'].length == 0){
             var elem = $('<li></li>');
             elem.addClass('item');
             elem.html('No Playlists');
             $('.playlists').append(elem);
-          }
-          else {
+          } else {
             var playlists = data['playlists'];
-            console.log(playlists);
-            playlists.forEach(function(playlistname){
+            //console.log(playlists);
+            playlists.forEach(function(playlist, index){
               var elem = $('<li></li>');
               elem.addClass('item');
-              elem.attr('data-name',playlistname);
-              elem.html(playlistname);
-              elem.on('click',function(){
-                onLoadPlaylist($(this).attr('data-name'));
-              });
+              elem.attr('data-index', index);
+              elem.attr('data-id', playlist);
+              var title = $('<div></div>');
+              title.addClass('title');
+              title.html(playlist);
+              elem.append(title);
+              elem.append(generate_playlist_controls());
+              elem.append($('<div class="clearfix"></div>'));
               $('.playlists').append(elem);
+            });
+            $('.playlists').find('a').on('click', function() {
+              var e = $(this);
+              var a = e.attr('data-action');
+              var i = e.closest('.item');
+              var id = i.attr('data-id');
+              var index = i.attr('data-index');
+              //alert(a + '\n' + index + '\n' + id + '\n');
+              if(a == "play"){
+                onLoadPlaylist(id);
+              } else if (a == "delete"){
+                onDeletePlaylist(id);
+              } else {
+                console.log("What do you want from me?");
+              }
             });
           }
         });
@@ -139,6 +159,13 @@
           controls.append(generate_action('up', 'chevron-up'));
           controls.append(generate_action('down', 'chevron-down'));
           controls.append(generate_action('remove', 'remove'));
+          return controls;
+        }
+        function generate_playlist_controls() {
+          var controls = $('<div></div>');
+          controls.addClass('pbc');
+          controls.append(generate_action('play', 'play'));
+          controls.append(generate_action('delete', 'trash'));
           return controls;
         }
         function generate_action(name, icon) {
@@ -192,34 +219,37 @@
         function onStop() {
           socket.emit("stop");
         }
-        function onLoadPlaylist(name){
+        function onLoadPlaylist(name) {
           socket.emit("playPlaylist", {'name': name, 'playing': true});
         }
-        function onSavePlaylist(){
+        function onSavePlaylist() {
           if($('#playlistname_input').val() != ""){
               socket.emit("save_queue_to_playlist", {"playlistname": $('#playlistname_input').val()});
-              socket.emit("get_playlist", {"name": undefined});
+              $('#playlistname_input').val("");
           }
           else {
             window.alert('You need to give the Playlist a name');
           }
-        };
-        function toggleShuffle(){
+        }
+        function onDeletePlaylist(name) {
+          socket.emit("delete_playlist", {'name': name});
+        }
+        function toggleShuffle() {
           socket.emit('toggleShuffle');
           socket.emit('get_queue');
         };
-        function toggleRepeat(){
+        function toggleRepeat() {
           socket.emit('toggleRepeat');
           socket.emit('get_queue');
         }
-        function onPlaySelectedTrack(id){
+        function onPlaySelectedTrack(id) {
           socket.emit('playtrack',{'id':id});
         }
-        function onRemoveTrack(id){
+        function onRemoveTrack(id) {
           socket.emit("delete_track", {'id': id});
           socket.emit("get_queue");
         }
-        function onMoveTrack(id, newpos){
+        function onMoveTrack(id, newpos) {
           socket.emit("chpos_of_track",{'id':id,'newpos':newpos});
           socket.emit("get_queue");
         }
@@ -234,10 +264,7 @@
         $('#save_queue_to_playlist').on('click',onSavePlaylist);
         $('#repeat').on('click',toggleRepeat);
         $('#shuffle').on('click',toggleShuffle);
-        socket.emit("isPlaying");
-        socket.emit("get_queue");
-        socket.emit("getFiles");
-        socket.emit("get_playlist",{"name":undefined});
+        socket.emit("update");
 
         $('.tabcontrol').each(function() {
           tabcontrol = $(this);
@@ -321,13 +348,13 @@
                   <div id="youtube" data-service="youtube" class="tab">
                     <div class="title"><i class="fa fa-youtube-play"></i> YouTube</div>
                     <div class="content">
-                      <div class="pbc"><input type="text" id="youtube-path"/></div>
+                      <div class="pbc"><input type="text" id="youtube-path" name="youtube-path"/></div>
                     </div>
                   </div>
                   <div id="filesystem" data-service="filesystem" class="tab">
                     <div class="title"><i class="fa fa-folder"></i> Filesystem</div>
                     <div class="content">
-                      <div class="pbc"><input type="text" id="filesystem-path" readonly/></div>
+                      <div class="pbc"><input type="text" id="filesystem-path" name="filesystem-path" readonly/></div>
                       <div class="fm">
                         <ul class="files"><li></li></ul>
                       </div>
@@ -336,13 +363,13 @@
                   <div id="url" data-service="url" class="tab">
                     <div class="title"><i class="fa fa-link"></i> URL</div>
                     <div class="content">
-                      <div class="pbc"><input type="text" id="url-path"/></div>
+                      <div class="pbc"><input type="text" id="url-path" name="url-path"/></div>
                     </div>
                   </div>
                   <div id="soundcloud" data-service="soundcloud" class="tab">
                     <div class="title"><i class="fa fa-soundcloud"></i> SoundCloud</div>
                     <div class="content">
-                      <div class="pbc"><input type="text" id="soundcloud-path"/></div>
+                      <div class="pbc"><input type="text" id="soundcloud-path" name="soundcloud-path"/></div>
                     </div>
                   </div>
                 </div>

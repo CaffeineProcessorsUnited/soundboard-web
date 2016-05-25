@@ -240,6 +240,7 @@ a:hover {
   padding: 5px 10px;
 }
 #page > .content .container > .content .list {
+  padding: 5px;
   list-style-type: none;
 }
 #page > .content .container > .content .list .item {
@@ -278,9 +279,6 @@ a:hover {
 #page > .content .container > .content .queue {
   overflow: auto;
   max-height: 400px;
-}
-#page > .content .container > .content .playlists {
-  padding: 10px;
 }
 #page > .content .container > .content .playlists .item {
   list-style-type: none;
