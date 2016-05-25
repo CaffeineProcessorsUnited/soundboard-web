@@ -240,11 +240,11 @@ a:hover {
   padding: 5px 10px;
 }
 #page > .content .container > .content .list {
-  padding: 5px;
   list-style-type: none;
 }
 #page > .content .container > .content .list .item {
-  padding: 0px 5px;
+  display: block;
+  padding: 4px 8px;
 }
 #page > .content .container > .content .list .item.current {
   background-color: #0a0b0d;
@@ -279,13 +279,6 @@ a:hover {
 #page > .content .container > .content .queue {
   overflow: auto;
   max-height: 400px;
-}
-#page > .content .container > .content .playlists .item {
-  list-style-type: none;
-  width: 100%;
-}
-#page > .content .container > .content .playlists .item:hover {
-  color: #2CB6CC;
 }
 #page > .content .container > .append {
   color: #FFF;
@@ -498,6 +491,57 @@ a:hover {
 #page .tabcontrol .wrapper .tabs .tab .pbc input {
   display: block;
   width: 100%;
+}
+#page .modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: rgba(37, 40, 48, 0.9);
+}
+#page .modal.show {
+  display: block;
+}
+#page .modal .wrapper {
+  margin: 0px auto;
+  padding: 0px 0px;
+  min-width: 500px;
+  max-width: 1200px;
+  width: 100%;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  width: auto;
+  margin: 10% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  position: relative;
+  background-color: #252830;
+}
+#page .modal .wrapper .controls {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+#page .modal .wrapper .controls .close::before {
+  content: "X";
+  font-size: 140%;
+  font-weight: bolder;
+}
+#page .modal .wrapper .title {
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+#page .modal .wrapper .content ul {
+  list-style-type: none;
+}
+#page .modal .wrapper .content ul li {
+  margin: 4px 0px;
 }
 #page .heart:hover {
   color: #FF2A28;

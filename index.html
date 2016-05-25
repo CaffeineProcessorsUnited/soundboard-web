@@ -7,11 +7,16 @@
     <script src="assets/js/filelist.js"></script>
     <script>
       var socket;
+      var config;
       var tracks;
       var suffle = false;
       var repeat = false;
       $(document).ready(function onDocumentReady() {
         socket = io.connect('http://localhost:8080');
+        socket.on('get_config', function getConfig(remoteconfig) {
+          config = remoteconfig;
+          socket.emit("update");
+        });
         socket.on('isPlaying', function onIsPlaying(data) {
           $('#play')[data["playing"] ? 'addClass' : 'removeClass']('playing');
           $('#play').find(".fa")[data["playing"] ? 'addClass' : 'removeClass']('fa-pause');
@@ -31,7 +36,13 @@
             elem.attr('data-id', track["id"]);
             var title = $('<div></div>');
             title.addClass('title');
-            title.html(track["path"]);
+            if (config["services"] && config["services"][track["service"]] && config["services"][track["service"]]["icon"]) {
+              var icon = $('<i></i>');
+              icon.addClass("fa");
+              icon.addClass("fa-" + config["services"][track["service"]]["icon"]);
+              title.append(icon);
+            }
+            title.html(title.html() + ' ' + track["path"]);
             elem.append(title);
             elem.append(generate_controls());
             elem.append($('<div class="clearfix"></div>'));
@@ -44,13 +55,13 @@
             var id = i.attr('data-id');
             var index = i.attr('data-index');
             //alert(a + '\n' + index + '\n' + id + '\n');
-            if(a=="play"){
+            if(a == "play"){
               onPlaySelectedTrack(id);
-            } else if (a=="up") {
+            } else if (a == "up") {
               onMoveTrack(id,parseInt(index)-1);
-            } else if (a=="down") {
+            } else if (a == "down") {
               onMoveTrack(id,parseInt(index)+1);
-            } else if (a=="remove"){
+            } else if (a == "remove"){
               onRemoveTrack(id);
             } else {
               console.log("What do you want from me?");
@@ -63,7 +74,7 @@
           socket.emit("isPlaying");
           socket.emit("get_queue");
           socket.emit("getFiles");
-          socket.emit("get_playlist", {"name":undefined});
+          socket.emit("get_playlist", {"name": undefined});
         });
         socket.on('getFiles', function onGetFiles(data) {
           console.log("filelist");
@@ -144,12 +155,39 @@
               //alert(a + '\n' + index + '\n' + id + '\n');
               if(a == "play"){
                 onLoadPlaylist(id);
+              } else if (a == "info"){
+                onPlaylistInfo(id);
+              } else if (a == "save"){
+                onSavePlaylist(id);
               } else if (a == "delete"){
                 onDeletePlaylist(id);
               } else {
                 console.log("What do you want from me?");
               }
             });
+          }
+        });
+        socket.on('get_playlist_tracks', function onGetPlaylist(data){
+          if (!!data["tracks"]) {
+            tracks = data["tracks"];
+            list = $('<ul></ul>');
+            tracks.forEach(function (track, i) {
+              console.log(track);
+              var elem = $('<li></li>');
+              elem.addClass('item');
+              if (config["services"] && config["services"][track["service"]] && config["services"][track["service"]]["icon"]) {
+                var icon = $('<i></i>');
+                icon.addClass("fa");
+                icon.addClass("fa-" + config["services"][track["service"]]["icon"]);
+                elem.append(icon);
+              }
+              elem.html(elem.html() + ' ' + track["path"]);
+              list.append(elem);
+            });
+            $('#playlistinfo .content').empty();
+            $('#playlistinfo .content').append(list);
+            $('#playlistinfo .title').text(data["playlist"]);
+            $('#playlistinfo').addClass("show");
           }
         });
         function generate_controls() {
@@ -165,6 +203,8 @@
           var controls = $('<div></div>');
           controls.addClass('pbc');
           controls.append(generate_action('play', 'play'));
+          controls.append(generate_action('info', 'info'));
+          controls.append(generate_action('save', 'download'));
           controls.append(generate_action('delete', 'trash'));
           return controls;
         }
@@ -222,12 +262,17 @@
         function onLoadPlaylist(name) {
           socket.emit("playPlaylist", {'name': name, 'playing': true});
         }
-        function onSavePlaylist() {
-          if($('#playlistname_input').val() != ""){
-              socket.emit("save_queue_to_playlist", {"playlistname": $('#playlistname_input').val()});
-              $('#playlistname_input').val("");
+        function onPlaylistInfo(name) {
+          socket.emit("get_playlist", {"name": name});
+        }
+        function onSavePlaylist(name) {
+          if (!name) {
+            name = $('#playlistname_input').val();
           }
-          else {
+          if(name != ""){
+              socket.emit("save_queue_to_playlist", {"playlistname": name});
+              $('#playlistname_input').val("");
+          } else {
             window.alert('You need to give the Playlist a name');
           }
         }
@@ -260,11 +305,16 @@
         $('#play_track').on('click', onPlayTitle);
         $('#add_to_queue').on('click', onAddToQueue);
         $('#clear_queue').on('click', onClearQueue);
-        $('#stop').on('click',onStop);
-        $('#save_queue_to_playlist').on('click',onSavePlaylist);
-        $('#repeat').on('click',toggleRepeat);
-        $('#shuffle').on('click',toggleShuffle);
-        socket.emit("update");
+        $('#stop').on('click', onStop);
+        $('#save_queue_to_playlist').on('click', function() { onSavePlaylist(); });
+        $('#repeat').on('click', toggleRepeat);
+        $('#shuffle').on('click', toggleShuffle);
+
+        $('.modal .controls a').on('click', function() {
+          $(this).closest('.modal').removeClass("show");
+        });
+
+        socket.emit('get_config');
 
         $('.tabcontrol').each(function() {
           tabcontrol = $(this);
@@ -337,6 +387,15 @@
       <h1>Soundboard Webinterface</h1>
     </div>
     <div class="content">
+      <div id="playlistinfo" class="modal">
+        <div class="wrapper">
+          <div class="controls">
+            <a href="#" class="close"></a>
+          </div>
+          <h3 class="title"></h3>
+          <div class="content"></div>
+        </div>
+      </div>
       <div class="flex">
         <div class="container">
           <h3 class="title">Playlists</h3>
