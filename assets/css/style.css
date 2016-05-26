@@ -502,7 +502,7 @@ a:hover {
   height: 100%;
   overflow-x: hidden;
   overflow-y: auto;
-  background-color: rgba(37, 40, 48, 0.9);
+  background-color: rgba(10, 11, 13, 0.9);
 }
 #page .modal.show {
   display: block;
@@ -519,7 +519,7 @@ a:hover {
   width: auto;
   margin: 10% auto;
   padding: 20px;
-  border: 1px solid #888;
+  border: 1px solid #FF50A2;
   position: relative;
   background-color: #252830;
 }
