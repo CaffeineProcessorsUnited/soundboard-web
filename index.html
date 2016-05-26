@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="http://localhost:8080/socket.io/socket.io.js"></script>
     <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/util.min.js"></script>
     <script src="assets/js/filelist.js"></script>
     <script>
       var socket;
@@ -13,6 +14,12 @@
       var repeat = false;
       $(document).ready(function onDocumentReady() {
         socket = io.connect('http://localhost:8080');
+        var runtime = new (function(socket, undefined) {
+          this.log = function(string) {
+            socket.emit("log", { 'log': window.util.format(string) });
+            console.log(string);
+          }
+        })(socket);
         socket.on('get_config', function getConfig(remoteconfig) {
           config = remoteconfig;
           socket.emit("update");
@@ -23,7 +30,7 @@
           $('#play').find(".fa")[!data["playing"] ? 'addClass' : 'removeClass']('fa-play');
         });
         socket.on('get_queue',function onGetCurrentQueue(data){
-          //console.log(data);
+          //runtime.log(data);
           $('#shuffle').children()[data["shuffle"] ? 'addClass' : 'removeClass']('active');
           $('#repeat').children()[data["repeat"] ? 'addClass' : 'removeClass']('active');
           tracks = data["queue"];
@@ -64,21 +71,21 @@
             } else if (a == "remove"){
               onRemoveTrack(id);
             } else {
-              console.log("What do you want from me?");
+              runtime.log("What do you want from me?");
             }
           });
           $('#tracktitle').text();
         });
         socket.on('poll', function onPoll() {
-          console.log("poll");
+          runtime.log("poll");
           socket.emit("isPlaying");
           socket.emit("get_queue");
           socket.emit("getFiles");
           socket.emit("get_playlist", {"name": undefined});
         });
         socket.on('getFiles', function onGetFiles(data) {
-          console.log("filelist");
-          //console.log(data);
+          runtime.log("filelist");
+          //runtime.log(data);
           generate_filelist($($('.files li')[0]), data["files"]);
           $($('.files li')[0]).find("ul").each(function() {
             $(this).children().last().addClass("lastChild");
@@ -98,7 +105,7 @@
             title = "Files";
             ulclass = "collapse";
           }
-          //console.log(title);
+          //runtime.log(title);
           parent.empty();
           if (typeof data === "object") {
             parent.append($('<i>' + title + '</i>'));
@@ -117,13 +124,13 @@
               parent.append(ul);
             }
           } else {
-            //console.log(title + " => " + data);
+            //runtime.log(title + " => " + data);
             parent.append($('<a data-path="' + data + '" href="#">' + title + '</a>'));
           }
         }
         socket.on('get_playlist', function onGetPlaylist(data){
-          console.log('playlists');
-          console.log(data);
+          runtime.log('playlists');
+          runtime.log(data);
           $('.playlists').empty();
           if(data['playlists'].length == 0){
             var elem = $('<li></li>');
@@ -132,7 +139,7 @@
             $('.playlists').append(elem);
           } else {
             var playlists = data['playlists'];
-            //console.log(playlists);
+            //runtime.log(playlists);
             playlists.forEach(function(playlist, index){
               var elem = $('<li></li>');
               elem.addClass('item');
@@ -162,7 +169,7 @@
               } else if (a == "delete"){
                 onDeletePlaylist(id);
               } else {
-                console.log("What do you want from me?");
+                runtime.log("What do you want from me?");
               }
             });
           }
@@ -172,7 +179,7 @@
             tracks = data["tracks"];
             list = $('<ul></ul>');
             tracks.forEach(function (track, i) {
-              console.log(track);
+              runtime.log(track);
               var elem = $('<li></li>');
               elem.addClass('item');
               if (config["services"] && config["services"][track["service"]] && config["services"][track["service"]]["icon"]) {
@@ -233,7 +240,7 @@
           socket.emit('prev');
         }
         function onPlayTitle(){
-          //console.log("send track");
+          //runtime.log("send track");
           service = $('#serviceSelector').attr("data-service");
           path = $('#' + service + '-path').val();
           socket.emit("add_track", {"service": service, "path": path,'next': true});
