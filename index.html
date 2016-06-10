@@ -76,7 +76,9 @@
               icon.addClass("fa-" + config["services"][track["service"]]["icon"]);
               title.append(icon);
             }
-            $('<font></font>').text(" " + track["path"] + '<span class="extra"></span>').appendTo(title);
+            titleelem = $('<font></font>');
+            titleelem.text(" " + track["path"]);
+            titleelem.html(titleelem.html() + '<span class="extra"></span>').appendTo(title);
             elem.append(title);
             elem.append(generate_controls());
             elem.append($('<div class="clearfix"></div>'));
