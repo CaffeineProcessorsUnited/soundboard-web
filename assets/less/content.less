@@ -11,9 +11,11 @@
   &::before {
     display: block;
     content: "";
-    height: 80px;
+    height: @header-height + @content-padding-top;
   }
-  .push {
+  &::after {
+    display: block;
+    content: "";
     height: @footer-height;
   }
   .flex {
@@ -38,8 +40,33 @@
     }
     & > .title{
       background-color: @brand-primary;
-      color: #FFF;
+      color: #FFFFFF;
       padding: 5px 10px;
+      a {
+        cursor: pointer;
+        &, &:link, &:visited {
+          color: @color-light;
+        }
+        &:active, &:hover {
+          color: @brand-accent;
+        }
+        &.active {
+          color: @brand-active;
+        }
+      }
+      h3 {
+        display: inline-block;
+        font-size: 130%;
+      }
+      .right {
+        float: right;
+      }
+      .big {
+        font-size: 150%;
+      }
+      .biger {
+        font-size: 200%;
+      }
     }
     & > .content {
       .list {
@@ -47,6 +74,10 @@
         .item {
           display: block;
           padding: 4px 8px;
+          &:hover {
+            background-color: @background-color-dark;
+            background-color: fade(@brand-accent, 15%);
+          }
           &.current {
             background-color: @background-color-dark;
             color: @brand-accent;

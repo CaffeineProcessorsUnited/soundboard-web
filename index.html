@@ -13,28 +13,52 @@
       var suffle = false;
       var repeat = false;
       $(document).ready(function onDocumentReady() {
-        socket = io.connect('http://localhost:8080');
+        socket = io.connect("localhost:8080");
         var runtime = new (function(socket, undefined) {
           this.log = function(string) {
             socket.emit("log", { 'log': window.util.format(string) });
             console.log(string);
-          }
+          };
+          this.loading = {};
+          this.extra = {};
         })(socket);
+        function checkLoading() {
+          loading = false;
+          for (var k in runtime.loading) {
+            if (runtime.loading.hasOwnProperty(k)) {
+              if (runtime.loading[k] === true) {
+                loading = true;
+                break;
+              }
+            }
+          }
+          $('#refresh').find(".fa")[loading ? 'addClass' : 'removeClass']('fa-spin');
+          $('#refresh')[loading ? 'addClass' : 'removeClass']('active');
+        }
+        function setLoading(item, state) {
+          runtime.loading[item] = state;
+          checkLoading();
+        }
         socket.on('get_config', function getConfig(remoteconfig) {
           config = remoteconfig;
           socket.emit("update");
         });
         socket.on('isPlaying', function onIsPlaying(data) {
+          setLoading("getIsPlaying", true);
           $('#play')[data["playing"] ? 'addClass' : 'removeClass']('playing');
           $('#play').find(".fa")[data["playing"] ? 'addClass' : 'removeClass']('fa-pause');
           $('#play').find(".fa")[!data["playing"] ? 'addClass' : 'removeClass']('fa-play');
+          setLoading("getIsPlaying", false);
         });
         socket.on('get_queue',function onGetCurrentQueue(data){
-          //runtime.log(data);
+          runtime.log(data);
+          setLoading("getQueue", true);
           $('#shuffle').children()[data["shuffle"] ? 'addClass' : 'removeClass']('active');
-          $('#repeat').children()[data["repeat"] ? 'addClass' : 'removeClass']('active');
+          $('#repeat').children()[data["repeat"] > 0 ? 'addClass' : 'removeClass']('active');
+          $('#repeat').children()[data["repeat"] == 2 ? 'addClass' : 'removeClass']('single');
           tracks = data["queue"];
           $('.queue').empty();
+          $('#queue_count').text(tracks.length + " track" + (tracks.length > 1 ? "s" : "") + " in queue");
           tracks.forEach(function(track, index){
             var elem = $('<li></li>');
             elem.addClass('item');
@@ -42,6 +66,9 @@
             elem.attr('data-index', index);
             elem.attr('data-id', track["id"]);
             var title = $('<div></div>');
+            title.attr('data-service', track["service"]);
+            title.attr('data-path', track["path"]);
+            title.addClass('track');
             title.addClass('title');
             if (config["services"] && config["services"][track["service"]] && config["services"][track["service"]]["icon"]) {
               var icon = $('<i></i>');
@@ -49,7 +76,7 @@
               icon.addClass("fa-" + config["services"][track["service"]]["icon"]);
               title.append(icon);
             }
-            title.html(title.html() + ' ' + track["path"]);
+            title.html(title.html() + ' ' + track["path"] + '<span class="extra"></span>');
             elem.append(title);
             elem.append(generate_controls());
             elem.append($('<div class="clearfix"></div>'));
@@ -74,7 +101,11 @@
               runtime.log("What do you want from me?");
             }
           });
-          $('#tracktitle').text();
+          if (!!data["currentTrack"] && !!data["currentTrack"]["path"]) {
+            $('#tracktitle').text((getExtra(data["currentTrack"]["service"], data["currentTrack"]["path"]) === "") ? data["currentTrack"]["path"] : getExtra(data["currentTrack"]["service"], data["currentTrack"]["path"]));
+          }
+          updateExtras();
+          setLoading("getQueue", false);
         });
         socket.on('poll', function onPoll() {
           runtime.log("poll");
@@ -85,6 +116,7 @@
         });
         socket.on('getFiles', function onGetFiles(data) {
           runtime.log("filelist");
+          setLoading("getFiles", true);
           //runtime.log(data);
           generate_filelist($($('.files li')[0]), data["files"]);
           $($('.files li')[0]).find("ul").each(function() {
@@ -98,6 +130,7 @@
             var path = e.attr('data-path');
             $('#filesystem-path').val(path);
           });
+          setLoading("getFiles", false);
         });
         function generate_filelist(parent, data, title) {
           ulclass = "";
@@ -131,6 +164,7 @@
         socket.on('get_playlist', function onGetPlaylist(data){
           runtime.log('playlists');
           runtime.log(data);
+          setLoading("getPlaylist", true);
           $('.playlists').empty();
           if(data['playlists'].length == 0){
             var elem = $('<li></li>');
@@ -173,6 +207,7 @@
               }
             });
           }
+          setLoading("getPlaylist", false);
         });
         socket.on('get_playlist_tracks', function onGetPlaylist(data){
           if (!!data["tracks"]) {
@@ -181,6 +216,9 @@
             tracks.forEach(function (track, i) {
               runtime.log(track);
               var elem = $('<li></li>');
+              elem.attr('data-service', track["service"]);
+              elem.attr('data-path', track["path"]);
+              elem.addClass('track');
               elem.addClass('item');
               if (config["services"] && config["services"][track["service"]] && config["services"][track["service"]]["icon"]) {
                 var icon = $('<i></i>');
@@ -188,13 +226,14 @@
                 icon.addClass("fa-" + config["services"][track["service"]]["icon"]);
                 elem.append(icon);
               }
-              elem.html(elem.html() + ' ' + track["path"]);
+              elem.html(elem.html() + ' ' + track["path"] + '<span class="extra"></span>');
               list.append(elem);
             });
             $('#playlistinfo .content').empty();
             $('#playlistinfo .content').append(list);
             $('#playlistinfo .title').text(data["playlist"]);
             $('#playlistinfo').addClass("show");
+            updateExtras();
           }
         });
         function generate_controls() {
@@ -234,10 +273,10 @@
           socket.emit('isPlaying');
         }
         function emitNext(){
-          socket.emit('next');
+          socket.emit('next', { "force": true });
         }
         function emitPrev() {
-          socket.emit('prev');
+          socket.emit('prev', { "force": true });
         }
         function onPlayTitle(){
           //runtime.log("send track");
@@ -249,7 +288,7 @@
         function onAddToQueue() {
           service = $('#serviceSelector').attr("data-service");
           path = $('#' + service + '-path').val();
-          socket.emit("add_track", {"service": service, "path": path,'next': false});
+          socket.emit("add_track", {"service": service, "path": path + "",'next': false});
           clearInput();
         }
         function clearInput() {
@@ -305,6 +344,10 @@
           socket.emit("chpos_of_track",{'id':id,'newpos':newpos});
           socket.emit("get_queue");
         }
+        $('#refresh').on('click', function() {
+          socket.emit("update");
+        });
+
         $('#prev').on('click', emitPrev);
         $('#next').on('click', emitNext);
 
@@ -365,6 +408,52 @@
             tabcontrol.trigger("setTab", [ (!!tabcontrol.attr("data-tab")) ? tabcontrol.attr("data-tab") : $(tabcontrol.find(".tab")[0]).attr("id") ]);
           }
         });
+        function loadExtra(service, path) {
+          extra = "";
+          switch (service) {
+            case "youtube":
+              if (!config["services"] || !config["services"][service] || !config["services"][service]["apikey"]) {
+                runtime.log("No api key for youtube configured");
+                break;
+              }
+              $.ajax({
+                async: false,
+                method: "GET",
+                url: "https://www.googleapis.com/youtube/v3/videos?part=snippet&key=" + config["services"][service]["apikey"] + "&id=" + path
+              }).done(function(data) {
+                if (!!data["items"] && data["items"].length > 0 && !!data["items"][0]["snippet"] && !!data["items"][0]["snippet"]["title"]) {
+                  extra = data["items"][0]["snippet"]["title"];
+                }
+              });
+              break;
+            case "filesystem":
+              split = path.split("/");
+              extra = split[split.length - 1];
+              break;
+          }
+          return extra;
+        }
+        function getExtra(service, path) {
+          if (!runtime.extra[service]) {
+            runtime.extra[service] = {};
+          }
+          if (!runtime.extra[service][path]) {
+            runtime.extra[service][path] = loadExtra(service, path);
+          }
+          return runtime.extra[service][path];
+        }
+        function updateExtras() {
+          $('.extra').each(function(i) {
+            span = $(this);
+            data = span.closest('.track');
+            service = data.attr('data-service');
+            path = data.attr('data-path');
+            if (getExtra(service, path) != "") {
+              span.text(getExtra(service, path));
+              span.html(' <i class="fa fa-minus"></i> ' + span.html());
+            }
+          });
+        }
 
         function initializeJS() {
           // Do nothing
@@ -386,12 +475,16 @@
           }
           return true;
         }
+        $(window).bind('beforeunload', function(){
+          return 'Leaving the page will wipe the cached data.\nIf you want to reload use the reload button on the page.\n\nDo u want to leave the page?';
+        });
       });
     </script>
   </head>
   <body id="page">
     <div class="header">
       <h1>Soundboard Webinterface</h1>
+
     </div>
     <div class="content">
       <div id="playlistinfo" class="modal">
@@ -399,13 +492,13 @@
           <div class="controls">
             <a href="#" class="close"></a>
           </div>
-          <h3 class="title"></h3>
+          <h3 class="title clearfix"></h3>
           <div class="content"></div>
         </div>
       </div>
       <div class="flex">
         <div class="container">
-          <h3 class="title">Playlists</h3>
+          <div class="title clearfix"><h3>Playlists</h3><a id="refresh" class="right biger"><i class="fa fa-refresh"></i></a></div>
           <div class="content">
             <div id="serviceSelector" class="tabcontrol">
               <div class="wrapper">
@@ -449,7 +542,7 @@
           </div>
         </div>
         <div class="container">
-          <h3 class="title">Current Queue</h3>
+          <div class="title clearfix"><h3>Current Queue</h3><div id="queue_count" class="right"></div></div>
           <div class="content">
             <ul class="queue list"></ul>
           </div>
@@ -459,13 +552,12 @@
           </div>
         </div>
         <div class="container">
-          <h3 class="title">Playlists</h3>
+          <h3 class="title clearfix">Playlists</h3>
           <div class="content">
             <ul class="playlists list"></ul>
           </div>
         </div>
       </div>
-      <div class="push"></div>
     </div>
     <div class="footer">
       <div class="grid">

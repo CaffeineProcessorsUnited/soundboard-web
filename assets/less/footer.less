@@ -25,6 +25,23 @@
     margin-top: 3px;
     margin-bottom: 3px;
   }
+  .pbc {
+    position: relative;
+    &.single::after, .single::after {
+      content: "1";
+      display: inline-block;
+      position: absolute;
+      right: 0px;
+      bottom: 0px;
+      background-color: @brand-active;
+      color: @color-darker;
+      font-size: 16px;
+      font-weight: bolder;
+      border-radius: 8px;
+      width: 16px;
+      height: 16px;
+    }
+  }
   .links {
     list-style-type: none;
     a {

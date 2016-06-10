@@ -30,6 +30,12 @@ a:active,
 a:hover {
   color: #2CB6CC;
 }
+.clearfix::after {
+  content: " ";
+  display: block;
+  height: 0;
+  clear: both;
+}
 #page {
   position: relative;
 }
@@ -212,7 +218,9 @@ a:hover {
   content: "";
   height: 80px;
 }
-#page > .content .push {
+#page > .content::after {
+  display: block;
+  content: "";
   height: 80px;
 }
 #page > .content .flex.row,
@@ -236,8 +244,36 @@ a:hover {
 }
 #page > .content .container > .title {
   background-color: #FF50A2;
-  color: #FFF;
+  color: #FFFFFF;
   padding: 5px 10px;
+}
+#page > .content .container > .title a {
+  cursor: pointer;
+}
+#page > .content .container > .title a,
+#page > .content .container > .title a:link,
+#page > .content .container > .title a:visited {
+  color: #FFFFFF;
+}
+#page > .content .container > .title a:active,
+#page > .content .container > .title a:hover {
+  color: #2CB6CC;
+}
+#page > .content .container > .title a.active {
+  color: #7CC807;
+}
+#page > .content .container > .title h3 {
+  display: inline-block;
+  font-size: 130%;
+}
+#page > .content .container > .title .right {
+  float: right;
+}
+#page > .content .container > .title .big {
+  font-size: 150%;
+}
+#page > .content .container > .title .biger {
+  font-size: 200%;
 }
 #page > .content .container > .content .list {
   list-style-type: none;
@@ -245,6 +281,10 @@ a:hover {
 #page > .content .container > .content .list .item {
   display: block;
   padding: 4px 8px;
+}
+#page > .content .container > .content .list .item:hover {
+  background-color: #0a0b0d;
+  background-color: rgba(44, 182, 204, 0.15);
 }
 #page > .content .container > .content .list .item.current {
   background-color: #0a0b0d;
@@ -318,6 +358,24 @@ a:hover {
   margin-top: 3px;
   margin-bottom: 3px;
 }
+#page > .footer .pbc {
+  position: relative;
+}
+#page > .footer .pbc.single::after,
+#page > .footer .pbc .single::after {
+  content: "1";
+  display: inline-block;
+  position: absolute;
+  right: 0px;
+  bottom: 0px;
+  background-color: #7CC807;
+  color: #2a2a2a;
+  font-size: 16px;
+  font-weight: bolder;
+  border-radius: 8px;
+  width: 16px;
+  height: 16px;
+}
 #page > .footer .links {
   list-style-type: none;
 }
@@ -362,7 +420,7 @@ a:hover {
   color: #2CB6CC;
 }
 #page .pbc a .active {
-  color: #2CB6CC;
+  color: #7CC807;
 }
 #page .pbc input,
 #page .pbc select {
@@ -464,6 +522,7 @@ a:hover {
   border-bottom-right-radius: 0px;
 }
 #page .tabcontrol .wrapper .nav li a.active {
+  color: #7CC807;
   background-color: #252830;
 }
 #page .tabcontrol .wrapper .nav li:first-child a {

@@ -46,6 +46,13 @@ a:active, a:hover {
   color: @brand-accent;
 }
 
+.clearfix::after {
+   content: " ";
+   display: block;
+   height: 0;
+   clear: both;
+}
+
 #page {
   position: relative;
   & > .header {
