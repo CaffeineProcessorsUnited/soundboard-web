@@ -76,7 +76,7 @@
               icon.addClass("fa-" + config["services"][track["service"]]["icon"]);
               title.append(icon);
             }
-            title.html(title.html() + ' ' + track["path"] + '<span class="extra"></span>');
+            $('<font></font>').text(" " + track["path"] + '<span class="extra"></span>').appendTo(title);
             elem.append(title);
             elem.append(generate_controls());
             elem.append($('<div class="clearfix"></div>'));
@@ -158,7 +158,8 @@
             }
           } else {
             //runtime.log(title + " => " + data);
-            parent.append($('<a data-path="' + data + '" href="#">' + title + '</a>'));
+            $('<a></a>').attr('data-path', data).attr('href', "#").text(title).appendTo(parent);
+            //parent.append($('<a data-path="' + data + '" href="#">' + title + '</a>'));
           }
         }
         socket.on('get_playlist', function onGetPlaylist(data){
@@ -181,7 +182,7 @@
               elem.attr('data-id', playlist);
               var title = $('<div></div>');
               title.addClass('title');
-              title.html(playlist);
+              title.text(playlist);
               elem.append(title);
               elem.append(generate_playlist_controls());
               elem.append($('<div class="clearfix"></div>'));
@@ -365,6 +366,9 @@
         });
 
         socket.emit('get_config');
+        function stripXSS(string){
+
+        }
 
         $('.tabcontrol').each(function() {
           tabcontrol = $(this);
