@@ -12,6 +12,9 @@
       var tracks;
       var suffle = false;
       var repeat = false;
+      function executeAsync(func) {
+        setTimeout(func, 0);
+      }
       $(document).ready(function onDocumentReady() {
         socket = io.connect("localhost:8080");
         var runtime = new (function(socket, undefined) {
@@ -37,6 +40,7 @@
         }
         function setLoading(item, state) {
           runtime.loading[item] = state;
+          //runtime.log(item + " changed state to " + state);
           checkLoading();
         }
         socket.on('get_config', function getConfig(remoteconfig) {
@@ -44,22 +48,20 @@
           socket.emit("update");
         });
         socket.on('isPlaying', function onIsPlaying(data) {
-          setLoading("getIsPlaying", true);
           $('#play')[data["playing"] ? 'addClass' : 'removeClass']('playing');
           $('#play').find(".fa")[data["playing"] ? 'addClass' : 'removeClass']('fa-pause');
           $('#play').find(".fa")[!data["playing"] ? 'addClass' : 'removeClass']('fa-play');
           setLoading("getIsPlaying", false);
         });
-        socket.on('get_queue',function onGetCurrentQueue(data){
+        socket.on('get_queue', function onGetCurrentQueue(data) {
           runtime.log(data);
-          setLoading("getQueue", true);
           $('#shuffle').children()[data["shuffle"] ? 'addClass' : 'removeClass']('active');
           $('#repeat').children()[data["repeat"] > 0 ? 'addClass' : 'removeClass']('active');
           $('#repeat').children()[data["repeat"] == 2 ? 'addClass' : 'removeClass']('single');
           tracks = data["queue"];
           $('.queue').empty();
           $('#queue_count').text(tracks.length + " track" + (tracks.length > 1 ? "s" : "") + " in queue");
-          tracks.forEach(function(track, index){
+          tracks.forEach(function(track, index) {
             var elem = $('<li></li>');
             elem.addClass('item');
             elem[(!!data["currentTrack"] && !!data["currentTrack"]["id"] && track["id"] == data["currentTrack"]["id"]) ? 'addClass' : 'removeClass']('current');
@@ -111,6 +113,10 @@
         });
         socket.on('poll', function onPoll() {
           runtime.log("poll");
+          setLoading("getIsPlaying", true);
+          setLoading("getQueue", true);
+          setLoading("getFiles", true);
+          setLoading("getPlaylist", true);
           socket.emit("isPlaying");
           socket.emit("get_queue");
           socket.emit("getFiles");
@@ -118,7 +124,6 @@
         });
         socket.on('getFiles', function onGetFiles(data) {
           runtime.log("filelist");
-          setLoading("getFiles", true);
           //runtime.log(data);
           generate_filelist($($('.files li')[0]), data["files"]);
           $($('.files li')[0]).find("ul").each(function() {
@@ -164,10 +169,9 @@
             //parent.append($('<a data-path="' + data + '" href="#">' + title + '</a>'));
           }
         }
-        socket.on('get_playlist', function onGetPlaylist(data){
+        socket.on('get_playlist', function onGetPlaylist(data) {
           runtime.log('playlists');
           runtime.log(data);
-          setLoading("getPlaylist", true);
           $('.playlists').empty();
           if(data['playlists'].length == 0){
             var elem = $('<li></li>');
@@ -212,7 +216,7 @@
           }
           setLoading("getPlaylist", false);
         });
-        socket.on('get_playlist_tracks', function onGetPlaylist(data){
+        socket.on('get_playlist_tracks', function onGetPlaylistTracks(data) {
           if (!!data["tracks"]) {
             tracks = data["tracks"];
             list = $('<ul></ul>');
@@ -235,8 +239,8 @@
             $('#playlistinfo .content').empty();
             $('#playlistinfo .content').append(list);
             $('#playlistinfo .title').text(data["playlist"]);
-            $('#playlistinfo').addClass("show");
             updateExtras();
+            $('#playlistinfo').addClass("show");
           }
         });
         function generate_controls() {
