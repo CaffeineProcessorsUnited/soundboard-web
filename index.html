@@ -16,7 +16,14 @@
         setTimeout(func, 0);
       }
       $(document).ready(function onDocumentReady() {
+        if (!window.io) {
+          console.log("No connection to socket server!");
+          return;
+        }
         socket = io.connect("localhost:8080");
+        socket.on('connect_error', function() {
+            console.log("disconnect");
+        });
         var runtime = new (function(socket, undefined) {
           this.log = function(string) {
             socket.emit("log", { 'log': window.util.format(string) });
@@ -67,20 +74,20 @@
             elem[(!!data["currentTrack"] && !!data["currentTrack"]["id"] && track["id"] == data["currentTrack"]["id"]) ? 'addClass' : 'removeClass']('current');
             elem.attr('data-index', index);
             elem.attr('data-id', track["id"]);
+            elem.attr('data-service', track["service"]);
+            elem.attr('data-path', track["path"]);
+            elem.addClass('track');
             var title = $('<div></div>');
-            title.attr('data-service', track["service"]);
-            title.attr('data-path', track["path"]);
-            title.addClass('track');
             title.addClass('title');
             if (config["services"] && config["services"][track["service"]] && config["services"][track["service"]]["icon"]) {
-              var icon = $('<i></i>');
+              var icon = $('<i>&nbsp;</i>');
               icon.addClass("fa");
               icon.addClass("fa-" + config["services"][track["service"]]["icon"]);
               title.append(icon);
             }
             titleelem = $('<font></font>');
-            titleelem.text(" " + track["path"]);
-            titleelem.html(titleelem.html() + '<span class="extra"></span>').appendTo(title);
+            titleelem.addClass("extra");
+            titleelem.text(track["path"]).appendTo(title);
             elem.append(title);
             elem.append(generate_controls());
             elem.append($('<div class="clearfix"></div>'));
@@ -95,10 +102,12 @@
             //alert(a + '\n' + index + '\n' + id + '\n');
             if(a == "play"){
               onPlaySelectedTrack(id);
+            } else if (a == "info") {
+              setTimeout(function() { onTrackInfo(i); }, 0);
             } else if (a == "up") {
-              onMoveTrack(id,parseInt(index)-1);
+              onMoveTrack(id,parseInt(index) - 1);
             } else if (a == "down") {
-              onMoveTrack(id,parseInt(index)+1);
+              onMoveTrack(id,parseInt(index) + 1);
             } else if (a == "remove"){
               onRemoveTrack(id);
             } else {
@@ -109,6 +118,14 @@
             $('#tracktitle').text((getExtra(data["currentTrack"]["service"], data["currentTrack"]["path"]) === "") ? data["currentTrack"]["path"] : getExtra(data["currentTrack"]["service"], data["currentTrack"]["path"]));
           }
           updateExtras();
+          current = $('.queue li.current');
+          if (current.length) {
+            queuepos = $('.queue li:first-child').offset();
+            currentpos = $(current[0]).offset();
+            $('.queue').animate({
+              scrollTop: currentpos.top - queuepos.top
+            }, 500);
+          }
           setLoading("getQueue", false);
         });
         socket.on('poll', function onPoll() {
@@ -204,7 +221,7 @@
               if(a == "play"){
                 onLoadPlaylist(id);
               } else if (a == "info"){
-                onPlaylistInfo(id);
+                setTimeout(function() { onPlaylistInfo(id); }, 0);
               } else if (a == "save"){
                 onSavePlaylist(id);
               } else if (a == "delete"){
@@ -222,31 +239,41 @@
             list = $('<ul></ul>');
             tracks.forEach(function (track, i) {
               runtime.log(track);
-              var elem = $('<li></li>');
+              var row = $('<li></li>');
+              var elem = $('<a href="#"></a>');
               elem.attr('data-service', track["service"]);
               elem.attr('data-path', track["path"]);
               elem.addClass('track');
               elem.addClass('item');
               if (config["services"] && config["services"][track["service"]] && config["services"][track["service"]]["icon"]) {
-                var icon = $('<i></i>');
+                var icon = $('<i>&nbsp;</i>');
                 icon.addClass("fa");
                 icon.addClass("fa-" + config["services"][track["service"]]["icon"]);
                 elem.append(icon);
               }
-              elem.html(elem.html() + ' ' + track["path"] + '<span class="extra"></span>');
-              list.append(elem);
+              var path = $('<span></span>');
+              path.addClass("extra");
+              elem.append(path);
+              row.append(elem);
+              list.append(row);
+            });
+            list.find('a').on('click', function() {
+              var e = $(this);
+              setTimeout(function() { onTrackInfo(e); }, 0);
             });
             $('#playlistinfo .content').empty();
             $('#playlistinfo .content').append(list);
             $('#playlistinfo .title').text(data["playlist"]);
             updateExtras();
             $('#playlistinfo').addClass("show");
+            $('#page').addClass("modal-open");
           }
         });
         function generate_controls() {
           var controls = $('<div></div>');
           controls.addClass('pbc');
           controls.append(generate_action('play', 'play'));
+          controls.append(generate_action('info', 'info'));
           controls.append(generate_action('up', 'chevron-up'));
           controls.append(generate_action('down', 'chevron-down'));
           controls.append(generate_action('remove', 'remove'));
@@ -343,6 +370,43 @@
         function onPlaySelectedTrack(id) {
           socket.emit('playtrack',{'id':id});
         }
+        function onTrackInfo(item) {
+          id = item.attr('data-id');
+          service = item.attr('data-service');
+          path = item.attr('data-path');
+          extra = getExtra(service, path);
+          extra = (extra === "") ? path : extra;
+          var elem = $('<div></div>');
+          elem.attr('data-service', service);
+          elem.attr('data-path', path);
+          elem.addClass('track');
+          var servicetitle = $('<h4></h4>');
+          servicetitle.text("Service:");
+          elem.append(servicetitle);
+          if (config["services"] && config["services"][service] && config["services"][service]["name"] && config["services"][service]["icon"]) {
+            var servicewrapper = $('<div></div>');
+            var icon = $('<i>&nbsp;</i>');
+            icon.addClass("fa");
+            icon.addClass("fa-" + config["services"][service]["icon"]);
+            servicewrapper.append(icon);
+            var servicename = $('<font></font>');
+            servicename.text(config["services"][service]["name"]);
+            servicewrapper.append(servicename);
+            elem.append(servicewrapper);
+          }
+          var pathtitle = $('<h4></h4>');
+          pathtitle.text("Path:");
+          elem.append(pathtitle);
+          var pathwrapper = $('<div></div>');
+          pathwrapper.text(path);
+          elem.append(pathwrapper);
+          $('#trackinfo .content').empty();
+          $('#trackinfo .content').append(elem);
+          $('#trackinfo .title').text(extra);
+          updateExtras();
+          $('#trackinfo').addClass("show");
+          $('#page').addClass("modal-open");
+        }
         function onRemoveTrack(id) {
           socket.emit("delete_track", {'id': id});
           socket.emit("get_queue");
@@ -369,12 +433,12 @@
 
         $('.modal .controls a').on('click', function() {
           $(this).closest('.modal').removeClass("show");
+          if ($('.modal.show').length == 0) {
+            $('#page').removeClass("modal-open");
+          }
         });
 
         socket.emit('get_config');
-        function stripXSS(string){
-
-        }
 
         $('.tabcontrol').each(function() {
           tabcontrol = $(this);
@@ -418,6 +482,12 @@
             tabcontrol.trigger("setTab", [ (!!tabcontrol.attr("data-tab")) ? tabcontrol.attr("data-tab") : $(tabcontrol.find(".tab")[0]).attr("id") ]);
           }
         });
+        $('.modal .overlay').on("click", function() {
+          $(this).closest('.modal').removeClass("show");
+          if ($('.modal.show').length == 0) {
+            $('#page').removeClass("modal-open");
+          }
+        });
         function loadExtra(service, path) {
           extra = "";
           switch (service) {
@@ -454,14 +524,13 @@
         }
         function updateExtras() {
           $('.extra').each(function(i) {
-            span = $(this);
-            data = span.closest('.track');
+            e = $(this);
+            data = e.closest('.track');
             service = data.attr('data-service');
             path = data.attr('data-path');
-            if (getExtra(service, path) != "") {
-              span.text(getExtra(service, path));
-              span.html(' <i class="fa fa-minus"></i> ' + span.html());
-            }
+            extra = getExtra(service, path);
+            //console.log(service + "//" + path + "='" + extra + "'");
+            e.text((extra === "") ? path : extra);
           });
         }
 
@@ -497,11 +566,25 @@
 
     </div>
     <div class="content">
+      <div class="overlay"></div>
       <div id="playlistinfo" class="modal">
+        <div class="overlay"></div>
         <div class="wrapper">
           <div class="controls">
             <a href="#" class="close"></a>
           </div>
+          <div class="loading"><i class="fa fa-refresh fa-spin"></i></div>
+          <h3 class="title clearfix"></h3>
+          <div class="content"></div>
+        </div>
+      </div>
+      <div id="trackinfo" class="modal">
+        <div class="overlay"></div>
+        <div class="wrapper">
+          <div class="controls">
+            <a href="#" class="close"></a>
+          </div>
+          <div class="loading"><i class="fa fa-refresh fa-spin"></i></div>
           <h3 class="title clearfix"></h3>
           <div class="content"></div>
         </div>
@@ -539,6 +622,12 @@
                     <div class="title"><i class="fa fa-soundcloud"></i> SoundCloud</div>
                     <div class="content">
                       <div class="pbc"><input type="text" id="soundcloud-path" name="soundcloud-path"/></div>
+                    </div>
+                  </div>
+                  <div id="tts" data-service="tts" class="tab">
+                    <div class="title"><i class="fa fa-bullhorn"></i> Text-to-Speech</div>
+                    <div class="content">
+                      <div class="pbc"><input type="text" id="tts-path" name="tts-path"/></div>
                     </div>
                   </div>
                 </div>
