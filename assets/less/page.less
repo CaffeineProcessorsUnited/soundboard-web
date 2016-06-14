@@ -14,6 +14,7 @@
 @import (less) "filemanager.less";
 @import (less) "tabs.less";
 @import (less) "modal.less";
+@import (less) "slider.less";
 
 * {
   margin: 0px;
@@ -53,6 +54,10 @@ a:active, a:hover {
    clear: both;
 }
 
+.pointer {
+  cursor: pointer;
+}
+
 #page {
   position: relative;
   overflow-y: auto;
@@ -78,6 +83,9 @@ a:active, a:hover {
     .tabs();
   }
   .modal();
+  .slider {
+    .slider();
+  }
   .heart:hover {
     color: @color-heart;
     .keyframes(heartbeat;{

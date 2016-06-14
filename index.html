@@ -5,6 +5,7 @@
     <script src="http://localhost:8080/socket.io/socket.io.js"></script>
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/js/util.min.js"></script>
+    <script src="assets/js/interact.min.js"></script>
     <script src="assets/js/filelist.js"></script>
     <script>
       var socket;
@@ -50,9 +51,25 @@
           //runtime.log(item + " changed state to " + state);
           checkLoading();
         }
-        socket.on('get_config', function getConfig(remoteconfig) {
+        socket.on('get_config', function onGetConfig(remoteconfig) {
           config = remoteconfig;
           socket.emit("update");
+        });
+        socket.on('durationChanged', function onPlaybackTimeChanged(data) {
+          socket.emit("getDuration");
+        });
+        socket.on('getDuration', function onGetPlaybackTime(data) {
+          $('.slider').attr('data-duration', data.duration);
+          $('.slider').trigger("data-changed");
+        });
+        socket.on('playbackTimeChanged', function onPlaybackTimeChanged(data) {
+          socket.emit("getPlaybackTime");
+        });
+        socket.on('getPlaybackTime', function onGetPlaybackTime(data) {
+          if ($('.slider').attr('data-dragging') !== "1") {
+            $('.slider').attr('data-time', data.time);
+            $('.slider').trigger("data-changed");
+          }
         });
         socket.on('isPlaying', function onIsPlaying(data) {
           $('#play')[data["playing"] ? 'addClass' : 'removeClass']('playing');
@@ -68,6 +85,10 @@
           tracks = data["queue"];
           $('.queue').empty();
           $('#queue_count').text(tracks.length + " track" + (tracks.length > 1 ? "s" : "") + " in queue");
+          if (!!data["currentTrack"] && !!data["currentTrack"]["duration"]) {
+            $('.slider').attr('data-duration', data["currentTrack"]["duration"]);
+            $('.slider').trigger("data-changed");
+          }
           tracks.forEach(function(track, index) {
             var elem = $('<li></li>');
             elem.addClass('item');
@@ -118,14 +139,7 @@
             $('#tracktitle').text((getExtra(data["currentTrack"]["service"], data["currentTrack"]["path"]) === "") ? data["currentTrack"]["path"] : getExtra(data["currentTrack"]["service"], data["currentTrack"]["path"]));
           }
           updateExtras();
-          current = $('.queue li.current');
-          if (current.length) {
-            queuepos = $('.queue li:first-child').offset();
-            currentpos = $(current[0]).offset();
-            $('.queue').animate({
-              scrollTop: currentpos.top - queuepos.top
-            }, 500);
-          }
+          scrollQueueToCurrentItem();
           setLoading("getQueue", false);
         });
         socket.on('poll', function onPoll() {
@@ -415,6 +429,16 @@
           socket.emit("chpos_of_track",{'id':id,'newpos':newpos});
           socket.emit("get_queue");
         }
+        function scrollQueueToCurrentItem() {
+          current = $('.queue li.current');
+          if (current.length && $('#scrolltocurrent').find('.fa').hasClass('fa-toggle-on')) {
+            queuepos = $('.queue li:first-child').offset();
+            currentpos = $(current[0]).offset();
+            $('.queue').animate({
+              scrollTop: currentpos.top - queuepos.top
+            }, 500);
+          }
+        }
         $('#refresh').on('click', function() {
           socket.emit("update");
         });
@@ -427,9 +451,23 @@
         $('#add_to_queue').on('click', onAddToQueue);
         $('#clear_queue').on('click', onClearQueue);
         $('#stop').on('click', onStop);
-        $('#save_queue_to_playlist').on('click', function() { onSavePlaylist(); });
+        $('#save_queue_to_playlist').on('click', function() {
+          onSavePlaylist();
+        });
         $('#repeat').on('click', toggleRepeat);
         $('#shuffle').on('click', toggleShuffle);
+        $('#scrolltocurrent').on('click', function() {
+          var e = $(this);
+          var fa = e.find('.fa');
+          if (fa.hasClass("fa-toggle-on")) {
+            fa.addClass("fa-toggle-off");
+            fa.removeClass("fa-toggle-on");
+          } else {
+            fa.addClass("fa-toggle-on");
+            fa.removeClass("fa-toggle-off");
+          }
+          scrollQueueToCurrentItem();
+        });
 
         $('.modal .controls a').on('click', function() {
           $(this).closest('.modal').removeClass("show");
@@ -488,6 +526,91 @@
             $('#page').removeClass("modal-open");
           }
         });
+        $('.bubble').mousedown(function() {
+          $(this).parent().attr('data-dragging', "1");
+        });
+        interact('.bubble').draggable({
+          onmove: function(event) {
+            var max = event.target.parentNode.getAttribute('data-duration');
+            if (max === undefined) {
+              return;
+            }
+            var target = event.target;
+            var parent = target.parentNode;
+
+            var x = (parseFloat(parent.getAttribute('data-x')) || 0) + event.dx;
+            var sliderStyle = window.getComputedStyle(parent, null);
+            var sliderWidth = parseInt(sliderStyle.getPropertyValue("width"));
+            var borderLeft = parseInt(sliderStyle.getPropertyValue('border-left-width'));
+            var borderRight = parseInt(sliderStyle.getPropertyValue('border-right-width'));
+            var borderWidth = borderLeft + borderRight;
+            var targetStyle = window.getComputedStyle(target, null);
+            var targetWidth = parseInt(targetStyle.getPropertyValue("width"));
+            var width = sliderWidth - targetWidth - borderWidth;
+
+            if (x < 0) {
+              x = 0;
+            }
+            if (x > width) {
+              x = width;
+            }
+            time = max * (x / width);
+            parent.setAttribute('data-time', time);
+            $(parent).trigger("data-changed");
+          },
+          onend: function (event) {
+            var target = event.target;
+            target.parentNode.setAttribute('data-dragging', "0");
+            console.log({ 'position': event.target.parentNode.getAttribute('data-time') || -1 });
+            socket.emit("seek", { 'position': event.target.parentNode.getAttribute('data-time') || -1 });
+          }
+        });
+        $('.slider').on('data-changed', function() {
+          function s2time(time) {
+            // leading zero
+            function l0(n) {
+              if (n < 10) {
+                return "0" + n;
+              }
+              return n;
+            }
+            var h = Math.floor(time / 3600);
+            var m = Math.floor((time - (h * 3600)) / 60);
+            var s = Math.floor(time - (h * 3600) - (m * 60));
+            return h + ":" + l0(m) + ":" + l0(s);
+          }
+
+          var parent = $(this);
+          var target = parent.find('.bubble');
+
+          var max = parseInt(parent.attr('data-duration'));
+          var time = parseInt(parent.attr('data-time'));
+
+          var sliderStyle = window.getComputedStyle(parent[0], null);
+          var sliderWidth = parseInt(sliderStyle.getPropertyValue("width"));
+          var borderLeft = parseInt(sliderStyle.getPropertyValue('border-left-width'));
+          var borderRight = parseInt(sliderStyle.getPropertyValue('border-right-width'));
+          var borderWidth = borderLeft + borderRight;
+          var targetStyle = window.getComputedStyle(target[0], null);
+          var targetWidth = parseInt(targetStyle.getPropertyValue("width"));
+          var width = sliderWidth - targetWidth - borderWidth;
+
+          if (time < 0) {
+            time = 0;
+          }
+          if (time > max) {
+            time = max;
+          }
+
+          var x = width * (time / max);
+
+          parent.attr('data-x', x);
+          target.css('left', x);
+          parent.attr('data-time', time.toFixed());
+          parent.attr('data-progress', s2time(time) + " / " + s2time(max));
+
+        });
+        $('.slider').trigger("data-changed");
         function loadExtra(service, path) {
           extra = "";
           switch (service) {
@@ -600,12 +723,14 @@
                   <div id="youtube" data-service="youtube" class="tab">
                     <div class="title"><i class="fa fa-youtube-play"></i> YouTube</div>
                     <div class="content">
+                      <p>Enter a youtube video id</p>
                       <div class="pbc"><input type="text" id="youtube-path" name="youtube-path"/></div>
                     </div>
                   </div>
                   <div id="filesystem" data-service="filesystem" class="tab">
                     <div class="title"><i class="fa fa-folder"></i> Filesystem</div>
                     <div class="content">
+                      <p>Select a file from the tree below</p>
                       <div class="pbc"><input type="text" id="filesystem-path" name="filesystem-path" readonly/></div>
                       <div class="fm">
                         <ul class="files"><li></li></ul>
@@ -615,18 +740,21 @@
                   <div id="url" data-service="url" class="tab">
                     <div class="title"><i class="fa fa-link"></i> URL</div>
                     <div class="content">
+                      <p></p>
                       <div class="pbc"><input type="text" id="url-path" name="url-path"/></div>
                     </div>
                   </div>
                   <div id="soundcloud" data-service="soundcloud" class="tab">
                     <div class="title"><i class="fa fa-soundcloud"></i> SoundCloud</div>
                     <div class="content">
+                      <p></p>
                       <div class="pbc"><input type="text" id="soundcloud-path" name="soundcloud-path"/></div>
                     </div>
                   </div>
                   <div id="tts" data-service="tts" class="tab">
                     <div class="title"><i class="fa fa-bullhorn"></i> Text-to-Speech</div>
                     <div class="content">
+                      <p></p>
                       <div class="pbc"><input type="text" id="tts-path" name="tts-path"/></div>
                     </div>
                   </div>
@@ -641,7 +769,11 @@
           </div>
         </div>
         <div class="container">
-          <div class="title clearfix"><h3>Current Queue</h3><div id="queue_count" class="right"></div></div>
+          <div class="title clearfix">
+            <h3>Current Queue</h3>
+            <div id="scrolltocurrent" class="right pointer"><i class="fa fa-toggle-on">&nbsp;</i>Scroll to Current</div>
+            <div id="queue_count" class="right"></div>
+          </div>
           <div class="content">
             <ul class="queue list"></ul>
           </div>
@@ -660,19 +792,20 @@
     </div>
     <div class="footer">
       <div class="grid">
-        <div class="row">
-          <div class="col col-12">
-            Now playing: <span id="tracktitle"></span>
-          </div>
+        <div class="row col col-12">
+          Now playing: <span id="tracktitle"></span>
         </div>
-        <div class="row">
-          <div class="col col-12">
-            <div class="pbc"><a href="#" id="prev"><i class="fa fa-backward"></i></a></div>
-            <div class="pbc"><a href="#" id="play"><i class="fa fa-play"></i></a></div>
-            <div class="pbc"><a href="#" id="stop"><i class="fa fa-stop"></i></a></div>
-            <div class="pbc"><a href="#" id="next"><i class="fa fa-forward"></i></a></div>
-            <div class="pbc"><a href="#" id="repeat"><i class="fa fa-repeat"></i></a></div>
-            <div class="pbc"><a href="#" id="shuffle"><i class="fa fa-random"></i></a></div>
+        <div class="row col col-12">
+          <div class="pbc"><a href="#" id="prev"><i class="fa fa-backward"></i></a></div>
+          <div class="pbc"><a href="#" id="play"><i class="fa fa-play"></i></a></div>
+          <div class="pbc"><a href="#" id="stop"><i class="fa fa-stop"></i></a></div>
+          <div class="pbc"><a href="#" id="next"><i class="fa fa-forward"></i></a></div>
+          <div class="pbc"><a href="#" id="repeat"><i class="fa fa-repeat"></i></a></div>
+          <div class="pbc"><a href="#" id="shuffle"><i class="fa fa-random"></i></a></div>
+        </div>
+        <div class="row col col-12">
+          <div class="content">
+            <div class="slider" data-duration="30000" data-time="500"><span class="bubble"></span></div>
           </div>
         </div>
       </div>
