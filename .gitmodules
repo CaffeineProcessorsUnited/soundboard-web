@@ -1,0 +1,3 @@
+[submodule "assets/js/cpu"]
+	path = assets/js/cpu
+	url = git@github.com:CaffeineProcessorsUnited/soundboard-lib.git
