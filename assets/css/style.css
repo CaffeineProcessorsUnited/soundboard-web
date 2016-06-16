@@ -36,6 +36,9 @@ a:hover {
   height: 0;
   clear: both;
 }
+.pointer {
+  cursor: pointer;
+}
 #page {
   position: relative;
   overflow-y: auto;
@@ -59,7 +62,8 @@ a:hover {
   text-align: center;
 }
 #page > .header .content {
-  margin: 0px auto;
+  margin-left: auto;
+  margin-right: auto;
   padding: 0px 0px;
   min-width: 500px;
   max-width: 1200px;
@@ -206,7 +210,8 @@ a:hover {
   height: 100%;
 }
 #page > .content {
-  margin: 0px auto;
+  margin-left: auto;
+  margin-right: auto;
   padding: 0px 0px;
   min-width: 500px;
   max-width: 1200px;
@@ -214,7 +219,7 @@ a:hover {
   min-height: 100%;
   height: auto !important;
   height: 100%;
-  margin-bottom: -80px;
+  margin-bottom: -110px;
   text-align: left;
 }
 #page > .content::before {
@@ -225,7 +230,7 @@ a:hover {
 #page > .content::after {
   display: block;
   content: "";
-  height: 80px;
+  height: 110px;
 }
 #page > .content .flex.row,
 #page > .content .flex .row {
@@ -272,6 +277,13 @@ a:hover {
 }
 #page > .content .container > .title .right {
   float: right;
+  margin: 0px 5px;
+}
+#page > .content .container > .title .right .fa.fa-toggle-on {
+  color: #7CC807;
+}
+#page > .content .container > .title .right .fa.fa-toggle-off {
+  color: #252830;
 }
 #page > .content .container > .title .big {
   font-size: 150%;
@@ -334,7 +346,7 @@ a:hover {
   bottom: 0px;
   display: table;
   width: 100%;
-  height: 80px;
+  height: 110px;
   background-color: #0a0b0d;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -348,19 +360,20 @@ a:hover {
   box-sizing: border-box;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
-  margin: 0px auto;
+  margin-left: auto;
+  margin-right: auto;
   padding: 0px 0px;
   min-width: 500px;
   max-width: 1200px;
   width: 100%;
   max-height: 100%;
-  padding: 2px 0px;
+  padding: 2px 4px;
   color: #777777;
   overflow: hidden;
 }
 #page > .footer .col {
-  margin-top: 3px;
-  margin-bottom: 3px;
+  margin-top: 1px;
+  margin-bottom: 1px;
 }
 #page > .footer .pbc {
   position: relative;
@@ -537,7 +550,7 @@ a:hover {
   margin-right: 0px;
 }
 #page .tabcontrol .wrapper .tabs {
-  padding: 5px;
+  padding: 10px;
 }
 #page .tabcontrol .wrapper .tabs .tab {
   width: 100%;
@@ -583,7 +596,8 @@ a:hover {
   background-color: transparent;
 }
 #page .modal .wrapper {
-  margin: 0px auto;
+  margin-left: auto;
+  margin-right: auto;
   padding: 0px 0px;
   min-width: 500px;
   max-width: 1200px;
@@ -640,6 +654,47 @@ a:hover {
 #page .modal.loading .wrapper .title,
 #page .modal.loading .wrapper .content {
   display: none;
+}
+#page .slider {
+  position: relative;
+  display: inline-block;
+  height: 18px;
+  width: 100%;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  margin-top: 17px;
+  border: 1px solid #2CB6CC;
+  background-color: #252830;
+  z-index: 100;
+}
+#page .slider:after {
+  height: 16px;
+  line-height: 16px;
+  font-size: 14px;
+  content: "" attr(data-progress) "";
+  position: absolute;
+  top: -18px;
+  left: 0px;
+  right: 0px;
+  text-align: center;
+  z-index: 102;
+}
+#page .slider .bubble {
+  content: "";
+  display: block;
+  position: absolute;
+  display: inline-block;
+  left: 0%;
+  height: 16px;
+  width: 16px;
+  background-color: #777777;
+  cursor: default;
+  z-index: 101;
+}
+#page .slider[data-duration] .bubble {
+  background-color: #FF50A2;
+  cursor: pointer;
 }
 #page .heart:hover {
   color: #FF2A28;

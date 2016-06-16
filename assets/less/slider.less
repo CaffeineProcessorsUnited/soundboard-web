@@ -1,0 +1,44 @@
+// "main":"main.less"
+@import (once) "variables.less";
+
+.slider() {
+  position: relative;
+  display: inline-block;
+  height: @slider-height + 2;
+  width: 100%;
+  .box-sizing(border-box);
+  margin-top: @slider-height + 1;
+  border: 1px solid @brand-accent;
+  background-color: @background-color;
+  z-index: 100;
+  &:after {
+    height: @slider-height;
+    line-height: @slider-height;
+    font-size: @slider-height - 2;
+    content: "" attr(data-progress) "";
+    position: absolute;
+    top: -(@slider-height + 2);
+    left: 0px;
+    right: 0px;
+    text-align: center;
+    z-index: 102;
+  }
+  .bubble {
+    content: "";
+    display: block;
+    position: absolute;
+    display: inline-block;
+    left: 0%;
+    height: @slider-height;
+    width: @slider-height;
+    background-color: @color-dark;
+    cursor: default;
+    z-index: 101;
+  }
+  &[data-duration] {
+    .bubble {
+      background-color: @brand-primary;
+      cursor: pointer;
+    }
+  }
+}
