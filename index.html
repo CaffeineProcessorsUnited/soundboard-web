@@ -7,14 +7,6 @@
     <script src="assets/js/util.min.js"></script>
     <script src="assets/js/filelist.js"></script>
     <script>
-      var socket;
-      var config;
-      var tracks;
-      var suffle = false;
-      var repeat = false;
-      function executeAsync(func) {
-        setTimeout(func, 0);
-      }
       $(document).ready(function onDocumentReady() {
         if (!window.io) {
           console.log("No connection to socket server!");
