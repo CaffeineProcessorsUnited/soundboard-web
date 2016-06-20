@@ -25,11 +25,8 @@ cpu.module("events").addEventListener("ready", function(cpu){
   });
   cpu.module("sockets").on("get_queue", {
     onreceive: function(data) {
-      $('.queue') = cpu.module("queue").genQueue({
-        list: data["queue"],
-        currentTrack: data["currentTrack"]
-      });
-      $(.queue).find('a').on('click', function() {
+      $('.queue') = cpu.module("queue").genQueue(data);
+      $('.queue').find('a').on('click', function() {
         var e = $(this);
         var a = e.attr('data-action');
         var i = e.closest('.item');
@@ -70,19 +67,70 @@ cpu.module("events").addEventListener("ready", function(cpu){
     onreceive : function() {
       cpu.module('util').log("poll");
       cpu.module("sockets").emit("isPlaying");
-      cpu.module("sockets").emit("isPlaying");
-      cpu.module("sockets").emit("isPlaying");
+      cpu.module("sockets").emit("get_queue");
+      cpu.module("sockets").emit("getFiles");
+      cpu.module("sockets").emit("get_playlist", {
+        "name" : undefined
+      });
+    }
+  });
+
+  cpu.module("sockets").on("getDuration", {
+    onreceive : function(data) {
+      $('.slider').attr('data-duration', data.duration);
+      $('.slider').trigger("data-changed");
+    }
+  });
+
+  cpu.module("sockets").on("get_playlist", {
+    onemit : function() {
+      cpu.module("background").set("getPlaylist", true);
+    }
+
+    onreceive : function(data) {
+      $('.playlists') = cpu.module("playlist").genPlaylistList(data);
+      $('.playlists').find('a').on('click', function() {
+        var e = $(this);
+        var a = e.attr('data-action');
+        var i = e.closest('.item');
+        var id = i.attr('data-id');
+        var index = i.attr('data-index');
+        if(a == "play"){
+          cpu.module("sockets").emit("playPlaylist", {'name': id, 'playing': true});
+        } else if (a == "info"){
+          //TODO setTimeout(function() { onPlaylistInfo(id); }, 0);
+        } else if (a == "save"){
+          onSavePlaylist(id);
+        } else if (a == "delete"){
+          cpu.module("sockets").emit("delete_playlist", {'name': id});  
+        } else {
+          runtime.log("What do you want from me?");
+        }
+      });
+      cpu.module("background").set("getPlaylist", false);
     }
   });
 
   function scrollQueueToCurrentItem() {
-          current = $('.queue li.current');
-          if (current.length && $('#scrolltocurrent').find('.fa').hasClass('fa-toggle-on')) {
-            queuepos = $('.queue li:first-child').offset();
-            currentpos = $(current[0]).offset();
-            $('.queue').animate({
-              scrollTop: currentpos.top - queuepos.top
-            }, 500);
-          }
-        }
+    current = $('.queue li.current');
+    if (current.length && $('#scrolltocurrent').find('.fa').hasClass('fa-toggle-on')) {
+      queuepos = $('.queue li:first-child').offset();
+      currentpos = $(current[0]).offset();
+      $('.queue').animate({
+        scrollTop: currentpos.top - queuepos.top
+      }, 500);
+    }
+  }
+
+  function onSavePlaylist(name) {
+    if (!name) {
+      name = $('#playlistname_input').val();
+    }
+    if(name != ""){
+      socket.emit("save_queue_to_playlist", {"playlistname": name});
+      $('#playlistname_input').val("");
+    } else {
+      window.alert('You need to give the Playlist a name');
+    }
+  }
 });

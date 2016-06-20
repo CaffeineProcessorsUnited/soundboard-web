@@ -17,7 +17,7 @@
       var queue = cpu.module("list").genList({
 				list: data['queue'],
 				currentTrack: data['currentTrack'],
-				genRow: function(item, options) {
+				genRow: function(index, item, options) {
 					var elem = $('<li></li>');
 					elem.addClass('class');
    				elem[(!!options.currentTrack && !!options.currentTrack["id"] && item["id"] == options.currentTrack["id"]) ? 'addClass' : 'removeClass']('current');
@@ -43,29 +43,29 @@
 					return elem;
 				}
 			});
-			module.prototype.genControls() {
-				var controls = $('<div></div>');
-				controls.addClass('pbc');
-				controls.append(cpu.module("button").genButton({
-					icon: "play",
-					attrs: [{"data-action": "play"}]
-				}));
-				controls.append(cpu.module("button").genButton({
-					icon: "info",
-					attrs: [{"data-action": "info"}]
-				}));
-				controls.append(cpu.module("button").genButton({
-					icon: "download",
-					attrs: [{"data-action": "save"}]
-				}));
-				controls.append(cpu.module("button").genButton({
-					icon: "trash",
-					attrs: [{"data-action": "delete"}]
-				}));
-				return controls;
-			};
 			return queue;
-    };
+	  };
+		module.prototype.genControls = function() {
+			var controls = $('<div></div>');
+			controls.addClass('pbc');
+			controls.append(cpu.module("button").genButton({
+				icon: "play",
+				attrs: [{"data-action": "play"}]
+			}));
+			controls.append(cpu.module("button").genButton({
+				icon: "info",
+				attrs: [{"data-action": "info"}]
+			}));
+			controls.append(cpu.module("button").genButton({
+				icon: "download",
+				attrs: [{"data-action": "save"}]
+			}));
+			controls.append(cpu.module("button").genButton({
+				icon: "trash",
+				attrs: [{"data-action": "delete"}]
+			}));
+			return controls;
+		};
     return module;
   })(modulename);
 
