@@ -13,13 +13,17 @@
       }
       this.cpu = options["cpu"];
     }
-    module.prototype.genQueue = function(data) {
-      var queue = cpu.module("list").genList({
+    module.prototype.genQueue = function(data, options) {
+			data = data || {};
+			options = options || {};
+			self = this;
+			return cpu.module("list").genList(cpu.extend(options, {
 				list: data['queue'],
 				currentTrack: data['currentTrack'],
+				container: options['container'],
 				genRow: function(index, item, options) {
 					var elem = $('<li></li>');
-					elem.addClass('class');
+					elem.addClass('item');
    				elem[(!!options.currentTrack && !!options.currentTrack["id"] && item["id"] == options.currentTrack["id"]) ? 'addClass' : 'removeClass']('current');
 					elem.attr('data-index', index);
 					elem.attr('data-id', item["id"]);
@@ -38,12 +42,11 @@
           titleelem.addClass("extra");
           titleelem.text(item["path"]).appendTo(title);
           elem.append(title);
-					elem.append(this.genControls());
+					elem.append(self.genControls());
           elem.append($('<div class="clearfix"></div>'));
 					return elem;
 				}
-			});
-			return queue;
+			}));
 	  };
 		module.prototype.genControls = function() {
 			var controls = $('<div></div>');

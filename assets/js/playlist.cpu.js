@@ -13,23 +13,26 @@
       }
       this.cpu = options["cpu"];
     }
-    module.prototype.genPlaylistList = function(data) {
-      var playlistlist = cpu.module("list").genList({
+    module.prototype.genPlaylistList = function(data, options) {
+			data = data || {};
+			options = options || {};
+			self = this;
+			return cpu.module("list").genList(cpu.extend(options, {
         list : data['playlists'],
         genRow : function(index, item, options) {
           var elem = $('<li></li>');
           elem.addClass('item');
           elem.attr('data-index', index);
-          elem.attr('data-id', playlist);
+          elem.attr('data-id', item);
           var title = $('<div></div>');
           title.addClass('title');
           title.text(item);
           elem.append(title);
-          elem.append(this.genControls());
+          elem.append(self.genControls());
           elem.append($('<div class="clearfix"></div>'));
           return elem;
         }
-      });
+      }));
       return playlistlist;
     };
     module.prototype.genControls = function() {
@@ -51,6 +54,7 @@
         'icon' : 'trash',
         'attrs' : {'data-action' : 'delete'}
       }));
+			return controls;
     };
     return module;
   })(modulename);
