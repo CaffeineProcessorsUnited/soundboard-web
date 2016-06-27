@@ -53,19 +53,19 @@
 			controls.addClass('pbc');
 			controls.append(cpu.module("button").genButton({
 				icon: "play",
-				attrs: [{"data-action": "play"}]
+				attrs: {"data-action": "play"}
 			}));
 			controls.append(cpu.module("button").genButton({
 				icon: "info",
-				attrs: [{"data-action": "info"}]
+				attrs: {"data-action": "info"}
 			}));
 			controls.append(cpu.module("button").genButton({
 				icon: "download",
-				attrs: [{"data-action": "save"}]
+				attrs: {"data-action": "save"}
 			}));
 			controls.append(cpu.module("button").genButton({
 				icon: "trash",
-				attrs: [{"data-action": "delete"}]
+				attrs: {"data-action": "delete"}
 			}));
 			return controls;
 		};

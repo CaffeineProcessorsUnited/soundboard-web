@@ -9,6 +9,7 @@ cpu.loadModule("list");
 cpu.loadModule("button")
 cpu.loadModule("queue");
 cpu.loadModule("playlist");
+cpu.loadModule("extra");
 
 cpu.module("events").addEventListener("ready", function(cpu){
   //Definiton off all the socket events
@@ -46,10 +47,11 @@ cpu.module("events").addEventListener("ready", function(cpu){
         } else if (a == "remove"){
           emitRemoveTrack(id);
         } else {
-          runtime.log("What do you want from me?");
+          cpu.module("util").log("What do you want from me?");
         }
       });
       cpu.module("background").set("getQueue", false);
+      scrollQueueToCurrentItem();
     },
     onemit: function() {
       cpu.module("background").set("getQueue", true);
@@ -140,12 +142,12 @@ cpu.module("events").addEventListener("ready", function(cpu){
     }
   });
   cpu.module("socket").on("get_playlist_tracks", {
-    onreceive: function() {
+    onreceive: function(cpu, data) {
       if (!!data["tracks"]) {
         tracks = data["tracks"];
         list = $('<ul></ul>');
         tracks.forEach(function (track, i) {
-          runtime.log(track);
+          //cpu.module("util").log(track);
           var row = $('<li></li>');
           var elem = $('<a href="#"></a>');
           elem.attr('data-service', track["service"]);
@@ -237,7 +239,7 @@ cpu.module("events").addEventListener("ready", function(cpu){
     id = item.attr('data-id');
     service = item.attr('data-service');
     path = item.attr('data-path');
-    extra = getExtra(service, path);
+    extra = cpu.module("extra").getExtra(service, path);
     extra = (extra === "") ? path : extra;
     var elem = $('<div></div>');
     elem.attr('data-service', service);
@@ -364,6 +366,32 @@ cpu.module("events").addEventListener("ready", function(cpu){
   function emitMoveTrack(id, newpos) {
     socket.emit("chpos_of_track",{'id':id,'newpos':newpos});
     socket.emit("get_queue");
+  }
+  function updateExtras() {
+    $('.extra').each(function(i) {
+      e = $(this);
+      data = e.closest('.track');
+      service = data.attr('data-service');
+      path = data.attr('data-path');
+      extra = cpu.module("extra").getExtra(service, path);
+      //console.log(service + "//" + path + "='" + extra + "'");
+      e.text((extra === "") ? path : extra);
+    });
+  }
+  function isEmpty(obj) {
+    // null and undefined are "empty"
+    if (obj == null) return true;
+    // Assume if it has a length property with a non-zero value
+    // that that property is correct.
+    if (obj.length > 0)    return false;
+    if (obj.length === 0)  return true;
+    // Otherwise, does it have any properties of its own?
+    // Note that this doesn't handle
+    // toString and valueOf enumeration bugs in IE < 9
+    for (var key in obj) {
+      if (hasOwnProperty.call(obj, key)) return false;
+    }
+    return true;
   }
 
   //Adding clicklistener to Buttons
@@ -530,66 +558,7 @@ cpu.module("events").addEventListener("ready", function(cpu){
 
   });
   $('.slider').trigger("data-changed");
-  function loadExtra(service, path) {
-    extra = "";
-    switch (service) {
-      case "youtube":
-        if (!cpu.module("config").get("services", service, "apikey")) {
-          runtime.log("No api key for youtube configured");
-          break;
-        }
-        $.ajax({
-          async: false,
-          method: "GET",
-          url: "https://www.googleapis.com/youtube/v3/videos?part=snippet&key=" + cpu.module("config").get("services", service, "apikey") + "&id=" + path
-        }).done(function(data) {
-          if (!!data["items"] && data["items"].length > 0 && !!data["items"][0]["snippet"] && !!data["items"][0]["snippet"]["title"]) {
-            extra = data["items"][0]["snippet"]["title"];
-          }
-        });
-        break;
-      case "filesystem":
-        split = path.split("/");
-        extra = split[split.length - 1];
-        break;
-    }
-    return extra;
-  }
-  function getExtra(service, path) {
-    if (!runtime.extra[service]) {
-      runtime.extra[service] = {};
-    }
-    if (!runtime.extra[service][path]) {
-      runtime.extra[service][path] = loadExtra(service, path);
-    }
-    return runtime.extra[service][path];
-  }
-  function updateExtras() {
-    $('.extra').each(function(i) {
-      e = $(this);
-      data = e.closest('.track');
-      service = data.attr('data-service');
-      path = data.attr('data-path');
-      extra = getExtra(service, path);
-      //console.log(service + "//" + path + "='" + extra + "'");
-      e.text((extra === "") ? path : extra);
-    });
-  }
-  function isEmpty(obj) {
-    // null and undefined are "empty"
-    if (obj == null) return true;
-    // Assume if it has a length property with a non-zero value
-    // that that property is correct.
-    if (obj.length > 0)    return false;
-    if (obj.length === 0)  return true;
-    // Otherwise, does it have any properties of its own?
-    // Note that this doesn't handle
-    // toString and valueOf enumeration bugs in IE < 9
-    for (var key in obj) {
-      if (hasOwnProperty.call(obj, key)) return false;
-    }
-    return true;
-  }
+
   cpu.module("socket").emit("get_config");
 
   $(window).bind('beforeunload', function(){
