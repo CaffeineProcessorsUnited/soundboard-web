@@ -65,7 +65,7 @@
 			}));
 			controls.append(cpu.module("button").genButton({
 				icon: "trash",
-				attrs: {"data-action": "delete"}
+				attrs: {"data-action": "remove"}
 			}));
 			return controls;
 		};

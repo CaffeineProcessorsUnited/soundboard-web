@@ -19,7 +19,7 @@ cpu.module("events").addEventListener("ready", function(cpu){
     }
   });
   cpu.module("socket").on("isPlaying", {
-    onreceive: function(data) {
+    onreceive: function(cpu, data) {
       $('#play')[data["playing"] ? 'addClass' : 'removeClass']('playing');
       $('#play').find(".fa")[data["playing"] ? 'addClass' : 'removeClass']('fa-pause');
       $('#play').find(".fa")[!data["playing"] ? 'addClass' : 'removeClass']('fa-play');
