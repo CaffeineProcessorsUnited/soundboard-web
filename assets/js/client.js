@@ -565,3 +565,7 @@ cpu.module("events").addEventListener("ready", function(cpu){
     return 'Leaving the page will wipe the cached data.\nIf you want to reload use the reload button on the page.\n\nDo u want to leave the page?';
   });
 });
+
+$(document).ready(function(){
+  cpu.ready();
+})
