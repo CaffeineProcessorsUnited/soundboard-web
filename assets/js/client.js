@@ -28,7 +28,16 @@ cpu.module("events").addEventListener("ready", function(cpu){
   });
   cpu.module("socket").on("get_queue", {
     onreceive: function(cpu, data) {
-      console.log(data);
+      cpu.module("util").log(data);
+      $('#shuffle').children()[data["shuffle"] ? 'addClass' : 'removeClass']('active');
+      $('#repeat').children()[data["repeat"] > 0 ? 'addClass' : 'removeClass']('active');
+      $('#repeat').children()[data["repeat"] == 2 ? 'addClass' : 'removeClass']('single');
+      tracks = data["queue"];
+      $('#queue_count').text(tracks.length + " track" + (tracks.length > 1 ? "s" : "") + " in queue");
+      if (!!data["currentTrack"] && !!data["currentTrack"]["duration"]) {
+        $('.slider').attr('data-duration', data["currentTrack"]["duration"]);
+        $('.slider').trigger("data-changed");
+      }
       cpu.module("queue").genQueue(data, { container: $('.queue') });
       $('.queue').find('a').on('click', function() {
         var e = $(this);
@@ -66,6 +75,7 @@ cpu.module("events").addEventListener("ready", function(cpu){
       cpu.module("socket").emit("get_playlist", {
         "name" : undefined
       });
+      cpu.module("")
     }
   });
   cpu.module("socket").on("getDuration", {
