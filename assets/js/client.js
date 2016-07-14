@@ -14,12 +14,13 @@ cpu.loadModule("extra");
 cpu.module("events").addEventListener("ready", function(cpu){
   //Definiton off all the socket events
   cpu.module("socket").on("connect_error", {
-    onreceive: function() {
+    onreceive: function(cpu, context) {
       cpu.module("util").log("Disconnect");
     }
   });
   cpu.module("socket").on("isPlaying", {
-    onreceive: function(cpu, data) {
+    onreceive: function(cpu, context) {
+      var data = context["data"];
       $('#play')[data["playing"] ? 'addClass' : 'removeClass']('playing');
       $('#play').find(".fa")[data["playing"] ? 'addClass' : 'removeClass']('fa-pause');
       $('#play').find(".fa")[!data["playing"] ? 'addClass' : 'removeClass']('fa-play');
@@ -27,7 +28,8 @@ cpu.module("events").addEventListener("ready", function(cpu){
     }
   });
   cpu.module("socket").on("get_queue", {
-    onreceive: function(cpu, data) {
+    onreceive: function(cpu, context) {
+      var data = context["data"];
       cpu.module("util").log(data);
       $('#shuffle').children()[data["shuffle"] ? 'addClass' : 'removeClass']('active');
       $('#repeat').children()[data["repeat"] > 0 ? 'addClass' : 'removeClass']('active');
@@ -67,7 +69,7 @@ cpu.module("events").addEventListener("ready", function(cpu){
     }
   });
   cpu.module("socket").on('poll', {
-    onreceive : function() {
+    onreceive : function(cpu, context) {
       cpu.module('util').log("poll");
       cpu.module("socket").emit("isPlaying");
       cpu.module("socket").emit("get_queue");
@@ -75,23 +77,24 @@ cpu.module("events").addEventListener("ready", function(cpu){
       cpu.module("socket").emit("get_playlist", {
         "name" : undefined
       });
-      cpu.module("")
     }
   });
   cpu.module("socket").on("getDuration", {
-    onreceive : function(cpu, data) {
+    onreceive : function(cpu, context) {
+      var data = context['data'];
       $('.slider').attr('data-duration', data.duration);
       console.log("trigger trigger");
       $('.slider').trigger("data-changed");
     }
   });
   cpu.module("socket").on("durationChanged", {
-    onreceive : function() {
+    onreceive : function(cpu, context) {
       cpu.socket("socket").emit("getDuration")
     }
   });
   cpu.module("socket").on("getPlaybackTime", {
-    onreceive: function(cpu, data) {
+    onreceive: function(cpu, context) {
+      var data = context['data'];
       if ($('.slider').attr('data-dragging') !== "1") {
         $('.slider').attr('data-time', data.time);
         $('.slider').trigger("data-changed");
@@ -99,15 +102,17 @@ cpu.module("events").addEventListener("ready", function(cpu){
     }
   });
   cpu.module("socket").on("playbackTimeChanged", {
-    onreceive: function() {
+    onreceive: function(cpu, context) {
+      var data = context['data'];
       cpu.module("socket").emit("getPlaybackTime");
     }
   });
   cpu.module("socket").on("get_playlist", {
-    onemit : function() {
+    onemit : function(cpu, context) {
       cpu.module("background").set("getPlaylist", true);
     },
-    onreceive : function(cpu, data) {
+    onreceive : function(cpu, context) {
+      var data = context['data'];
       cpu.module("playlist").genPlaylistList(data, { container: $('.playlists') });
       $('.playlists').find('a').on('click', function() {
         var e = $(this);
@@ -131,11 +136,12 @@ cpu.module("events").addEventListener("ready", function(cpu){
     }
   });
   cpu.module("socket").on("getFiles", {
-    onemit : function() {
+    onemit : function(cpu, context) {
       cpu.module("background").set("getFiles", true);
     },
 
-    onreceive : function(cpu, data) {
+    onreceive : function(cpu, context) {
+      var data = context['data'];
       generate_filelist($($('.files li')[0]), data["files"]);
       $($('.files li')[0]).find("ul").each(function() {
         $(this).children().last().addClass("lastChild");
@@ -152,7 +158,8 @@ cpu.module("events").addEventListener("ready", function(cpu){
     }
   });
   cpu.module("socket").on("get_playlist_tracks", {
-    onreceive: function(cpu, data) {
+    onreceive: function(cpu, context) {
+      var data = context['data'];
       if (!!data["tracks"]) {
         tracks = data["tracks"];
         list = $('<ul></ul>');
@@ -190,7 +197,8 @@ cpu.module("events").addEventListener("ready", function(cpu){
     }
   });
   cpu.module("socket").on("get_config", {
-    onreceive: function(cpu, remoteconfig) {
+    onreceive: function(cpu, context) {
+      var remoteconfig = context['data'];
       cpu.module("config").load(remoteconfig);
       emitUpdate();
     }
@@ -568,6 +576,9 @@ cpu.module("events").addEventListener("ready", function(cpu){
 
   });
   $('.slider').trigger("data-changed");
+
+  console.log(cpu.module("socket").names);
+  cpu.module("socket").registerSocket();
 
   cpu.module("socket").emit("get_config");
 
