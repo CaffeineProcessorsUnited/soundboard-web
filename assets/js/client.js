@@ -338,17 +338,6 @@ cpu.module("events").addEventListener("ready", function(cpu){
   function emitPlaylistInfo(name) {
     cpu.module("socket").emit("get_playlist", {"name": name});
   }
-  function emitSavePlaylist(name) {
-    if (!name) {
-      name = $('#playlistname_input').val();
-    }
-    if(name != ""){
-        cpu.module("socket").emit("save_queue_to_playlist", {"playlistname": name});
-        $('#playlistname_input').val("");
-    } else {
-      window.alert('You need to give the Playlist a name');
-    }
-  }
   function emitDeletePlaylist(name) {
     cpu.module("socket").emit("delete_playlist", {'name': name});
   }
@@ -368,7 +357,7 @@ cpu.module("events").addEventListener("ready", function(cpu){
       name = $('#playlistname_input').val();
     }
     if(name != ""){
-      cpu.module("socket").emit("save_queue_to_playlist", {"playlistname": name});
+      cpu.module("socket").emit("save_queue_to_playlist", {'playlistname': name});
       $('#playlistname_input').val("");
     } else {
       window.alert('You need to give the Playlist a name');
@@ -421,7 +410,9 @@ cpu.module("events").addEventListener("ready", function(cpu){
   $('#add_to_queue').on('click', emitAddToQueue);
   $('#clear_queue').on('click', emitClearQueue);
   $('#stop').on('click', emitStop);
-  $('#save_queue_to_playlist').on('click', emitSavePlaylist);
+  $('#save_queue_to_playlist').on('click', function() {
+    emitSavePlaylist();
+  });
   $('#repeat').on('click', emitToggleRepeat);
   $('#shuffle').on('click', emitToggleShuffle);
   $('#scrolltocurrent').on('click', function() {
