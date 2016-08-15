@@ -60,8 +60,12 @@
 				attrs: {"data-action": "info"}
 			}));
 			controls.append(cpu.module("button").genButton({
-				icon: "download",
-				attrs: {"data-action": "save"}
+				icon: "chevron-up",
+				attrs: {"data-action": "up"}
+			}));
+			controls.append(cpu.module("button").genButton({
+				icon: "chevron-down",
+				attrs: {"data-action": "down"}
 			}));
 			controls.append(cpu.module("button").genButton({
 				icon: "trash",

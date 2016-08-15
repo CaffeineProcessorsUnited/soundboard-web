@@ -371,8 +371,8 @@ cpu.module("events").addEventListener("ready", function(cpu){
     cpu.module("socket").emit("get_queue");
   }
   function emitMoveTrack(id, newpos) {
-    socket.emit("chpos_of_track",{'id':id,'newpos':newpos});
-    socket.emit("get_queue");
+    cpu.module("socket").emit("chpos_of_track",{'id':id,'newpos':newpos});
+    cpu.module("socket").emit("get_queue");
   }
   function updateExtras() {
     $('.extra').each(function(i) {
