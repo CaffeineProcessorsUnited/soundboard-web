@@ -89,7 +89,7 @@ cpu.module("events").addEventListener("ready", function(cpu){
   });
   cpu.module("socket").on("durationChanged", {
     onreceive : function(cpu, context) {
-      cpu.socket("socket").emit("getDuration")
+      cpu.module("socket").emit("getDuration")
     }
   });
   cpu.module("socket").on("getPlaybackTime", {
