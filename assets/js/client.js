@@ -7,9 +7,9 @@ cpu.loadModule("util", { utils: window.util });
 cpu.loadModule("background");
 cpu.loadModule("list");
 cpu.loadModule("button")
-cpu.loadModule("queue");
 cpu.loadModule("playlist");
 cpu.loadModule("extra");
+cpu.loadModule("queue");
 
 cpu.module("events").addEventListener("ready", function(cpu){
   //Definiton off all the socket events
@@ -62,6 +62,7 @@ cpu.module("events").addEventListener("ready", function(cpu){
         }
       });
       cpu.module("background").set("getQueue", false);
+      updateExtras();
       scrollQueueToCurrentItem();
     },
     onemit: function() {
@@ -126,7 +127,9 @@ cpu.module("events").addEventListener("ready", function(cpu){
           setTimeout(function() { emitPlaylistInfo(id); }, 0);
         } else if (a == "save"){
           emitSavePlaylist(id);
-        } else if (a == "delete"){
+        } else if (a == "delete"){var onVoice = function( voice ) {
+    console.log( "Recieving Voice Data" );
+};
           emitDeletePlaylist(id);
         } else {
           runtime.log("What do you want from me?");
